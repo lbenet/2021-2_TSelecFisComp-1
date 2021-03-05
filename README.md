@@ -4,6 +4,8 @@
 
 **Grupo 8326**
 
+[Curso remoto](https://aulas-virtuales.cuaed.unam.mx/), lunes 10-11, viernes 10-12.
+
 ---
 
 ### Contenido del curso
