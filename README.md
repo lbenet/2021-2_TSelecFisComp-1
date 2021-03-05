@@ -4,6 +4,14 @@
 
 **Grupo 8326**
 
+[Curso remoto](https://aulas-virtuales.cuaed.unam.mx/), lunes 10-11, viernes 10-12.
+
+Luis Benet
+[Instituto de Ciencias Físicas, UNAM](https://www.fis.unam.mx)
+
+Julián Ramírez Castro
+[Facultad de Ciencias, UNAM](http://www.fciencias.unam.mx)
+
 ---
 
 ### Contenido del curso
