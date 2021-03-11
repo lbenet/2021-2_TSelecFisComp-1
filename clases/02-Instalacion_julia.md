@@ -4,7 +4,7 @@
 
 2. Correr el ejecutable de `Julia` que instalaron; el lugar donde se encuentra el ejecutable depende de la plataforma que usen. Esto debería abrir una nueva ventana con el *prompt* `julia> `; esta ventana también se conoce como REPL ("Read-Evaluate-Print-Loop").
 
-   <!--img src="../imagenes/julia.png" alt="alt text" width="700" height="200"/-->
+   <img src="../imagenes/julia.png" alt="alt text" width="700" height="200"/>
 
    `Julia` puede ser usado desde la terminal (REPL), usando el Jupyter notebook (o JupyterLab), o usando distintos editores que permiten correr Julia ahí mismo (ver [Julia Editor Support](https://github.com/JuliaEditorSupport)).
 
