@@ -101,6 +101,7 @@ falso(1) || falso(2) # Dos operaciones
 
 glob_i = 1  # Esta variable debe definirse *antes* del `while`
 while glob_i <= 5
+    global glob_i  # declaramos que `glob_i` es una variable global
     println(glob_i)
     glob_i += 1
     v_out = glob_i
@@ -192,11 +193,15 @@ sizeof( 1:1_000_000 )
 
 # 1. Construyan una función qué, a partir de un tipo de estructura (e.g., `Int64`), muestre 
 # el árbol de estructuras que están por arriba de él, es decir, que son más generales. hasta 
-# llegar a `Any`. Ilustren su función con varios ejemplos.
+# llegar a `Any`. Usen la función con varios ejemplos.
 # 
 # 1. Usando la siguiente función (tomada de 
-# [aquí](https://github.com/crstnbr/JuliaWorkshop19/blob/master/1_One/1_types_and_dispatch.ipynb))
+# [aquí](https://github.com/crstnbr/JuliaWorkshop19/blob/master/1_One/1_types_and_dispatch.ipynb)),
+# lo que para funcionar requiere que carguen la función `subtypes` (está dentro de 
+# `InteractiveUtils.jl`)
+# 
 # ```julia
+# using  InteractiveUtils: subtypes
 # function show_subtypetree(T, level=1, indent=4)
 #     level == 1 && println(T)
 #     for s in subtypes(T)
@@ -207,7 +212,8 @@ sizeof( 1:1_000_000 )
 # ```
 # - ¿Qué pueden decir de los tipos que son concretos en cuanto a su posición en el árbol de tipos?
 # 
-# 1. Escriban una función que aproxime la raíz cuadrada de `a` usando el método iterativo Babilonio:  
+# 1. Escriban una función, incluyendo *docstrings* que expliquen el algoritmo* que aproxime 
+# la raíz cuadrada de `a` usando el método iterativo Babilonio:  
 # - (1) Empiecen con un número arbitrario *positivo* `x`.
 # - (2) Reemplacen `x` por  `(x+a/x)/2` .
 # - (3) Repitan el paso anterior usando el nuevo valor de `x`.

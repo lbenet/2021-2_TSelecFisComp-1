@@ -107,9 +107,6 @@ un_vector + otro_vector
 un_vector * otro_vector # da un `MethodError`; `*` entre vectores no es una operación del álgebra lineal
 
 #-
-una_tupla = (1, 2, 3, 4) # una tupla
-
-#-
 transpose(un_vector) * otro_vector # producto interno
 
 #-
@@ -117,9 +114,6 @@ un_vector .* otro_vector # producto de elemento a elemento; regresa un vector
 
 #-
 un_vector .^ 2 # cuadrado, elemento  a elemento
-
-#-
-un_vector .^ [0,1,2] # esto es una matriz de Vandermonde; noten que la dimensión es 2
 
 # Uno puede evaluar otras funciones elemento-a-elemento, explotando lo que 
 # se llama *broadcasting*. Esto equivale a hacer la operación de manera
@@ -152,7 +146,7 @@ collect(2:3:9) # de 2 a 9 en pasos de 3
 collect(0:0.1:2) # de 0 a 2 en pasos de 0.1
 
 #-
-rang = range(0:0.1:2)  # lo mismo que lo anterior, pero más eficiente
+rang = range(0, step=0.1, stop=2)  # lo mismo que lo anterior, pero más eficiente
 
 #-
 rang[2]  # 2do elemento de `rang`
@@ -187,6 +181,7 @@ A[6] # equivalente,  en este caso, a A[2,3]
 # Es importante notar que los elementos de cada renglón se separan con un espacio
 # en blanco, y los renglones por <Enter> o un  `;`.
 
+# Varias operaciones estándar del álgebra lineal están definidas de manera natural.
 b = un_vector[1:3]  # vector de longitud 3, a partir de `un_vector`
 
 #-
@@ -196,16 +191,30 @@ A*b  # producto de matriz por vector
 inv(A)  # matrriz inversa
 
 # La solución del sistema $A x = b$ es $x = A^{-1} b$
-x = inv(A)*b
+x1 = inv(A)*b
 
 #-
-A/b # equivale a inv(A)*b, pero es más rápido
+A*x1 - b  # verificamos qué tan buena es la solución
+
+#-
+x2 = A\b # equivale a inv(A)*b, pero es más rápido
+
+#-
+x1 == x2  # Los resultados no son idénticos; `A\b` es más rápido 
+
+# Varias operaciones son reconocidas entre vectores y matrices. En particular, explotando
+# `transpose` uno puede efectivamente lograr un producto eexterno
+
+un_vector * transpose(un_vector)
+
+# Otras construcciones de matrices se pueden hacer explotando el *broadcasting*.
+un_vector .^ [0 1 2 3] # esto es una matriz de Vandermonde
 
 #-
 sin.(A) # `sin` evaluado elemento a elemento
 
 #-
-sin(A)  # función `sin` aplicado a la matriz `A`
+sin(A)  # función `sin` aplicado a la matriz `A` (no a cada elemento!)
 
 # ## Tuplas
 
@@ -225,10 +234,15 @@ una_tupla_con_nombres.b # equivalente a una_tupla_con_nombres[2]
 # cambiados, reasignados, añadidos o borrrados, y los de la tupla no. Las matrices,
 # siendo arreglos, son mutables.
 
-una_tupla[end] = 0  # da un `MethodError`; `end` se usa para  indicar el último elemento
+un_vector[end] = 0 # `end` se usa para indicar el último elemento
 
 #-
-un_vector[end] = 0
+una_tupla[end] = 0  # arroja un `MethodError`
+
+# Otra diferencia entre las tuplas y los vectores es que las operaciiones típicas no
+# funcionan con las tuplas.
+
+una_tupla + una_tupla  # esto arroja un `MethodError`
 
 # ## Tipos
 
@@ -283,8 +297,10 @@ typeof(DataType)
 typeof(typeof(exp))
 
 # Los tipos en Julia tienens una estructura (en el sentido de grafos)
-# que es un árbol; uno puede ver los tipos más generales, o más específicos,
-# usando las instrucciones `supertype` y `subtypes`.
+# que es un árbol. Uno puede conocer los tipos más generales, o más específicos,
+# usando las instrucciones `supertype` y `subtypes`; la última está
+# dentro de la librería estándar `InteractiveUtils.jl`, que eventualmente 
+# cargaremos.
 
 supertype(Int)
 
@@ -312,13 +328,23 @@ supertype(typeof(esta_clase))
 #-
 supertype(AbstractString)
 
-# Claramente, cualquier cosa es subtipo de `Any`.
+#-
+supertype(Any)
 
-# Por otro lado, las *hojas* del árbol de tipos terminan en `Type[]` que es un
-# vector con *cero elementos* de tipo `Type`. Esto es una manera de decir que no hay más subtipos.
-subtypes(Number)  # regresa un  vector de tipos
+# Claramente, cualquier cosa tiene como último supertipo a `Any`.
 
-#- 
+# Para  ver los resultados de los subtipos, cargamos de la librería 
+# `InteractiveUtils` la función `subtypes`.
+
+using InteractiveUtils: subtypes
+
+#-
+subtypes(Number)  # regressa un  vector de tipos
+
+# Las *hojas del árbol* de tipos (el final) corresponde a `Type[]` que es un
+# vector con *cero elementos* de tipo `Type`. Esto es una manera de decir 
+# que no hay más subtipos.
+
 typeof(subtypes(Number))
 
 #-
