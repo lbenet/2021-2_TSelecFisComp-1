@@ -212,7 +212,7 @@ mi_sqrt(-1//1)
 #-
 mi_sqrt(1//1)
 
-# El macro `@code_warntype`, de la librería estándar `InteractiveUtilities` ayuda a encontrar 
+# El macro `@code_warntype`, de la librería estándar `InteractiveUtils.jl` ayuda a encontrar 
 # problemas respecto a la estabilidad de tipo. (Más tarde usaremos también el macro `@which`,
 # así  que lo cargamos de una vez.)
 

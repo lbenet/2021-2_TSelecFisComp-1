@@ -198,7 +198,7 @@ sizeof( 1:1_000_000 )
 # 1. Usando la siguiente función (tomada de 
 # [aquí](https://github.com/crstnbr/JuliaWorkshop19/blob/master/1_One/1_types_and_dispatch.ipynb)),
 # lo que para funcionar requiere que carguen la función `subtypes` (está dentro de 
-# `InteractiveUtils`)
+# `InteractiveUtils.jl`)
 # 
 # ```julia
 # using  InteractiveUtils: subtypes

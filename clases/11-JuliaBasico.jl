@@ -299,7 +299,7 @@ typeof(typeof(exp))
 # Los tipos en Julia tienens una estructura (en el sentido de grafos)
 # que es un árbol. Uno puede conocer los tipos más generales, o más específicos,
 # usando las instrucciones `supertype` y `subtypes`; la última está
-# dentro de la librería estándar `InteractiveUtils`, que eventualmente 
+# dentro de la librería estándar `InteractiveUtils.jl`, que eventualmente 
 # cargaremos.
 
 supertype(Int)
