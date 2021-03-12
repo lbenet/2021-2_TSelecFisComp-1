@@ -212,8 +212,11 @@ mi_sqrt(-1//1)
 #-
 mi_sqrt(1//1)
 
-# El macro `@code_warntype` ayuda a encontrar problemas respecto a la estabilidad de tipo.
+# El macro `@code_warntype`, de la librería estándar `InteractiveUtilities` ayuda a encontrar 
+# problemas respecto a la estabilidad de tipo. (Más tarde usaremos también el macro `@which`,
+# así  que lo cargamos de una vez.)
 
+using InteractiveUtils:  @code_warntype, @which
 @code_warntype mi_sqrt(1//1)
 
 # ## Ambigüedades
@@ -247,7 +250,7 @@ gg(1, 2)
 gg("Hello", "World!")
 
 #-
-@which f("2", 1.5) # El macro `@which` permite identificar qué método se está usando
+@which gg("2", 1.5) # El macro `@which` permite identificar qué método se está usando
 
 # A veces, uno puede definir métodos de una función de tal manera que Julia no encuentre qué método 
 # aplicar en el sentido de cuál es el *más concreto* respecto al tipo de los argumentos. 
