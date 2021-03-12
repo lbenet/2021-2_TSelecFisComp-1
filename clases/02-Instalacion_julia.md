@@ -25,7 +25,7 @@ Julia (prompt `julia> `) usando la tecla para borrar o apretando `ctrl-C`. Para
 empezar a usar el notebook, correremos los siguientes comandos:
 	```
 	        julia> using IJulia
-			julia> notebook()
+		julia> notebook()
 	```
 
    A partir de aquí, uno puede ejecutar los comandos escritos en las celdas usando `shift-enter`.
