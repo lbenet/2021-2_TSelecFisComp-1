@@ -10,19 +10,20 @@
 # números complejos.
 # 
 # Los números complejos los podemos entender como una *pareja ordenada* $z=(x, y)$ que
-# algebraicamente escribimos $z = x +i y$, donde $x,y\in\mathbb R$, y el "número" $i$ lo
-# definimos a partir de $i^2 = -1$. Decimos que $x$ es la *parte real* de $z$, y que $y$
+# algebraicamente escribimos $z = x +i y$, donde $x,y\in\mathbb R$, con la propiedad de 
+# que el "número" $i$ cumple $i^2 = -1$. Decimos que $x$ es la *parte real* de $z$, y que $y$
 # es su *parte imaginaria*.
 # 
 # Con esta definición, podemos extender las operaciones aritméticas al igual que las
-# funciones elementales de manera sencilla. (Ésta es, de hecho, la manera en que están
-# implementados los números complejos en Julia.)
+# funciones elementales de manera sencilla, simplemente explotando el álgebra y además $i^2=-1$. 
+# (Ésta es, de hecho, la manera en que están implementados los números complejos en Julia.)
 
 #-
 # En el mismo espíritu, uno puede definir al *par ordenado*
 # $\overleftrightarrow{x} = (x, x^\prime) = x + \epsilon x^\prime$, con 
 # $x, x^\prime \in \mathbb R$, y donde $\epsilon$ lo definimos con la propiedad 
-# $\epsilon^2=0$. Es fácil pues convencerse que estas estructuras, que llamaremos 
+# $\epsilon^2=0$. (La notación me la inventé, sólo  para distinguir el par ordeenado
+# de alguna manera. Es fácil pues convencerse que estas estructuras, que llamaremos 
 # *números duales*, cumplen:
 # 
 # \begin{eqnarray}
@@ -68,6 +69,9 @@
 # opción es usar `promote` y `convert` para definir reglas de promoción y conversión; 
 # [la documentación](https://docs.julialang.org/en/v1/manual/conversion-and-promotion/)
 # tiene más información, por si este camino les interesa.
+# 
+# - Definan las funciones `fun` y `der` que, al ser aplicadas a un `Dual` devuelvan
+# la parte principal y la parrte derivada del `Dual`.
 # 
 # - Incluyan varios casos (propuestos por ustedes mismos) donde se *compruebe* que lo que 
 # implementaron da el resultado que debería ser. Para esto, pueden usar la librería 

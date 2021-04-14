@@ -92,7 +92,7 @@ p1.x = 2.0
 struct Partic2d
     x :: Array{Float64,1}
     v :: Array{Float64,1}
-    # La siguiente función se llama constructor interno
+    #La siguiente función se llama constructor interno
     function Partic2d(x::Array{Float64,1}, v::Array{Float64,1})
         @assert length(x) == length(v) == 2
         return new(x, v)
@@ -145,7 +145,7 @@ mp2.x = [2, 1]  # Funciona, ya que el tipo es mutable!
 mp2
 
 #-
-# ## Estructuras paramétricos
+# ## Estructuras paramétricas
 
 # En ocasiones uno quiere definir estructuras que operen con distinto tipo de entradas. Un 
 # ejemplo son los racionales: tenemos `Rational{Int}` y *también* `Rational{BigInt}`; otro
@@ -185,8 +185,8 @@ struct Partic3d{T<:Real}
 end
 
 # En cierto sentido, en la definición anterior de `Partic3d{T}` la `T` adquiere un tipo 
-# concreto que es el que se utiliza en los campos donde se requiere especificar dentro
-# del constructor.
+# concreto, que es subtipo de `Real`, y que es el que se utiliza en los campos donde se 
+# requiere especificar dentro del constructor.
 
 Partic3d([1,2,3], [2,3,4])  # regresa un Partic3d{Int}
 
@@ -215,9 +215,10 @@ end
 #-
 x = MiVector2d(1, 2) # da un error !?
 
-# El error indica algo *aparentemente* "no relacionado" con lo que hemos hecho, sino que 
-# tiene que ver con la visualización de `x`. Notemos, por ejemplo, que `x.x` y `x.y` 
-# dan los resultado esperados. De hecho, `x` ha sido *definido*.
+# El error indica *algo* aparentemente no relacionado con lo que hemos hecho, sino que 
+# tiene que ver con la visualización de `x`. (El mensaje dice que el problema está con `size`.)
+# Uno puede notar que `x.x` y `x.y` dan los resultado esperados; de hecho, `x` ha sido *definido*,
+# pero no lo podemos visualiizar.
 
 x.x, x.y
 
@@ -261,6 +262,6 @@ Base.:+(x::MiVector2d, y::MiVector2d) = MiVector2d((x + y)...)
 #-
 x + y
 
-# Este ejemplo *no* es un ejemplo muy interesante, pero muestra que Julia permite adecuar 
+# Este ejemplo *no* es uno muy interesante, pero muestra que Julia permite adecuar 
 # las cosas a lo que requerimos, y que permite *extender* a Julia para que la interacción 
 # sea sencilla.
