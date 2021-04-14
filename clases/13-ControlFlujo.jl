@@ -195,27 +195,26 @@ sizeof( 1:1_000_000 )
 # el árbol de estructuras que están por arriba de él, es decir, que son más generales. hasta 
 # llegar a `Any`. Usen la función con varios ejemplos.
 # 
-# 1. Usando la siguiente función (tomada de 
+# 2. Usando la siguiente función (tomada de 
 # [aquí](https://github.com/crstnbr/JuliaWorkshop19/blob/master/1_One/1_types_and_dispatch.ipynb)),
 # lo que para funcionar requiere que carguen la función `subtypes` (está dentro de 
 # `InteractiveUtils.jl`)
-# 
 # ```julia
-# using  InteractiveUtils: subtypes
-# function show_subtypetree(T, level=1, indent=4)
-#     level == 1 && println(T)
-#     for s in subtypes(T)
-#         println(join(fill(" ", level * indent)) * string(s))
-#         show_subtypetree(s, level+1, indent)
+#     using  InteractiveUtils: subtypes
+#     function show_subtypetree(T, level=1, indent=4)
+#         level == 1 && println(T)
+#         for s in subtypes(T)
+#             println(join(fill(" ", level * indent)) * string(s))
+#             show_subtypetree(s, level+1, indent)
+#         end
 #     end
-# end
 # ```
-# - ¿Qué pueden decir de los tipos que son concretos en cuanto a su posición en el árbol de tipos?
+# ¿Qué pueden decir de los tipos que son concretos en cuanto a su posición en el árbol de tipos?
 # 
-# 1. Escriban una función, incluyendo *docstrings* que expliquen el algoritmo* que aproxime 
+# 3. Escriban una función, incluyendo *docstrings* que expliquen el algoritmo* que aproxime 
 # la raíz cuadrada de `a` usando el método iterativo Babilonio:  
-# - (1) Empiecen con un número arbitrario *positivo* `x`.
-# - (2) Reemplacen `x` por  `(x+a/x)/2` .
-# - (3) Repitan el paso anterior usando el nuevo valor de `x`.
+#     - (1) Empiecen con un número arbitrario *positivo* `x`.
+#     - (2) Reemplacen `x` por  `(x+a/x)/2` .
+#     - (3) Repitan el paso anterior usando el nuevo valor de `x`.  
 # (Recuerden definir algún criterio de parada de la función.)
 # 
