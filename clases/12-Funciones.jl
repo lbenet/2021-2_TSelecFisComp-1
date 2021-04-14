@@ -62,7 +62,7 @@ r
 # función `push!`.
 
 push!([1,2,3], 4)
-    
+
 # Uno puede también definir funciones que no requieren ningún argumento.
 
 mi_nombre() = "Luis"
@@ -70,7 +70,7 @@ mi_nombre() = "Luis"
 #-
 mi_nombre()
 
-# También vale la pena decir que los operdores, como `+` o `^`, son funciones. Por lo mismo,
+# También vale la pena decir que los operadores, como `+` o `^`, son funciones. Por lo mismo,
 # uno puede usarlas incluyendo paréntesis (que es lo que se llama *infix form*) de 
 # manera completamente equivalente:
 
@@ -131,7 +131,7 @@ lala(1, 2, (3, 4))
 # La siguiente ejecución de `lala` distribuye los argumentos de la tupla; esto se
 # llama `splat`
 
-lala((1,2,3)...) # equivalente a lala(1,(2,3))
+lala((1,2,3)...) # equivalente a lala(1,2,3)
 
 # ## Métodos, *multiple dispatch*, y estabilidad de tipo
 
@@ -204,7 +204,7 @@ function mi_sqrt(x)
     else
         return sqrt(x) # El resultado es del mismo tipo que `x` (`AbstractFloat`)
     end
-end        
+end
 
 #-
 mi_sqrt(-1//1)
@@ -262,7 +262,7 @@ gg(x::Any, y::String) = println("string")
 #-
 gg(3, "test")
 
-# Vale la pena notar que  en el mensaje de error, está  una posible solución para resolver
+# Vale la pena notar que  en el mensaje de error, está una posible solución para resolver
 # la ambigüedad.
 
 
