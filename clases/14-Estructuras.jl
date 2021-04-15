@@ -74,6 +74,9 @@ p1 = Partic1d(1.0, -2.4)
 #-
 p1.x
 
+#-
+getfield(p1, :v) # Otra manera de obtener el campo `:v` de p1
+
 # El tipo de estructura que acabamos de crear es *inmutable*, lo que significa que los 
 # campos individuales (cuando son *concretos*), no se pueden cambiar. Esto lo que
 # significa es que si tratamos de cambiar el campo interno de un tipo inmutable, Julia
@@ -257,7 +260,7 @@ x + y
 # `MiVector2d{Float64}`. Para logra que el resultado sea del tipo que queremos, sobrecargamos 
 # la función `:+`.
 
-Base.:+(x::MiVector2d, y::MiVector2d) = MiVector2d((x + y)...)
+Base.:+(x::MiVector2d, y::MiVector2d) = MiVector2d((x .+ y)...)
 
 #-
 x + y
