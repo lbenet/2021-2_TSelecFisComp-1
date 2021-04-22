@@ -192,7 +192,7 @@ x2, _, _ = itera_mapeo(x->f(x, 0.6), -0.8, 20)
 x1[end], x2[end]
 
 #-
-### $\alpha>1$.
+# ### $\alpha>1$.
 
 x3, _, _ = itera_mapeo(x->f(x, 1.6), 0.08, 8)
 x4, _, _ = itera_mapeo(x->f(x, 1.6), -0.08, 8)
@@ -219,7 +219,7 @@ x3[end], x4[end]
 # fijo. De igual manera, si $-1<\alpha<0$ el límite será también el punto fijo. En este
 # caso decimos que el punto fijo es **linealmente estable**. La diferencia entre
 # el caso con $\alpha$ positiva o negativa radica en la *forma* en la que los iterados
-# se acerrcan al punto fijo... la ambigüedad es a propéosito...
+# se acerrcan al punto fijo... la ambigüedad es a propósito...
 
 #-
 # Por otra parte, si $|\alpha|>1$, el límite cuando $n\to\infty$ es $\infty$, es decir,
@@ -336,5 +336,5 @@ plot!(-1:1/16:0.1, identity, xaxis=("x", (-1.1, 1.1)), label="Id(x)", color=:gre
 # periodo $n$ tienen la misma derivada *respecto* al mapeo $F^n$, i.e.,
 # $(F^n)'(x_0)=(F^n)'(x_1)=\dots=(F^n)'(x_{n-1})$.
 # 
-# Por lo tanto, todos los puntos ligados por una órbita periódica son atractivos (o repulivos).
+# Por lo tanto, todos los puntos ligados por una órbita periódica son atractivos o repulsivos.
 # 
