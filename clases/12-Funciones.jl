@@ -276,7 +276,7 @@ gg(3, "test")
 # 
 # 1. ¿Qué asignación pueden hacer para separar los resultados de `mifunc`?
 # 
-# 1. ¿Cuál es el tipo de `mifunc`? Hint: ¿Cuál es el tipo de `(mifunct, typeof(mifunc))`?
+# 1. ¿Cuál es el tipo de `mifunc`? Hint: ¿Cuál es el tipo de `(mifunc, typeof(mifunc))`?
 # 
 # 1. ¿Qué tipo de resultado se obtiene al ejecutar la siguiente función?
 #     ```julia
