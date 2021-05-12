@@ -21,7 +21,7 @@ gr(grid=false)
 # El ejercicio 3 del archivo anterior trataba de explorar los detalles 
 # de lo que pasaba en el intervalo $-2\le c<1/4$ de manera íntegra. La 
 # razón por la que nos concentramos en el intervalo con $1/4\ge c\ge -2$ 
-# es que, en este caso el intervalo de $x$ $\mathcal{D}$ se mapea sobre 
+# es que, en este caso el intervalo de $x \in \mathcal{D}$ se mapea sobre 
 # sí mismo.
 
 #-

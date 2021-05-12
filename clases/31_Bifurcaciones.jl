@@ -178,8 +178,8 @@ savefig("Fig31-2.png")
 
 #-
 Qc(x,c) = x^2 + c       # Mapeo cuadrático
-qc1 = x -> Qc(x, -0.5)  # Mapeo cuadrático con c = 0.5
-qc2 = x -> Qc(x, -0.76)  # Mapeo cuadrático con c = 0.5
+qc1 = x -> Qc(x, -0.5)  # Mapeo cuadrático con c = -0.5
+qc2 = x -> Qc(x, -0.76)  # Mapeo cuadrático con c = -0.76
 
 #-
 p = plot(domx, qc1, xaxis=("x", ), yaxis="Q_c(x)", 
