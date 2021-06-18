@@ -250,7 +250,7 @@ savefig("Fig31-3.png")
 # por la derivada
 # 
 # \begin{equation}
-# {Q_c^2}'(q_+(c)) = {Q_c^2}'(q_-(c)) = Q_c'(q_+(c)) Q_c'(q_-(c)) = 4 q_+(c) q_-(c) = -2-4c.
+# {Q_c^2}'(q_+(c)) = {Q_c^2}'(q_-(c)) = Q_c'(q_+(c)) Q_c'(q_-(c)) = 4 q_+(c) q_-(c) = 4+4c.
 # \end{equation}
 
 #-
