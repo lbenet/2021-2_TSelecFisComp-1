@@ -47,7 +47,7 @@
 # - De los $2^p$ puntos del ciclo de periodo $2^p$, es decir,
 # $\{0, p_1, \dots p_{2^{n-1}}\,\}$ hay uno (distinto del 0) cuya distancia
 # a 0 es la menor; a esa distancia la identificaremos como $d_n$.
-# Estimen numéricamente a qué converge la secuencia $\alpha = d_n/d_{n+1}$ en
+# Estimen numéricamente a qué converge la secuencia $\alpha = - d_n/d_{n+1}$ en
 # el límite de $n$ muy grande.
 
 #-

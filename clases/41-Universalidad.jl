@@ -63,7 +63,7 @@ using Plots
 # que $\lambda(x_0)=0$. La sutileza está evidentemente en el órden de los
 # límites, que no necesariamente conmuta.
 # - Las unidades del exponente de Lyapunov corresponden al inverso del tiempo, es
-# decir, $\lambda^-1$ describe una escala relevante del tiempo para la dinámica.
+# decir, $\lambda^{-1}$ describe una escala relevante del tiempo para la dinámica.
 
 #-
 # Si el mapeo $f(x)$ es suficientemente suave, entonces podemos escribir
@@ -76,13 +76,13 @@ using Plots
 # Dado que para mapeos se cumple
 #
 # \begin{equation}
-# \frac{{\rm d}f^n}{{\rm d}x}(x_0) = f'(x_0) f'(x_1)\dots f'(x_{n-1}) = \prod_{i=1}^{n} f'(x_i),
+# \frac{{\rm d}f^n}{{\rm d}x}(x_0) = f'(x_0) f'(x_1)\dots f'(x_{n-1}) = \prod_{i=0}^{n-1} f'(x_i),
 # \end{equation}
 #
 # donde $x_i=f^i(x_0)$, es decir, $x_i$ es el i-ésimo iterado de $x_0$, obtenemos
 #
 # \begin{equation}
-# \lambda(x_0) = \lim_{n\to\infty} \frac{1}{n} \sum_{i=1}^n \log\Big| \, f'(x_i)\, \Big|.
+# \lambda(x_0) = \lim_{n\to\infty} \frac{1}{n} \sum_{i=0}^{n-1} \log\Big| \, f'(x_i)\, \Big|.
 # \end{equation}
 #
 
