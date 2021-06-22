@@ -110,7 +110,7 @@ using Plots
 # En esta sección, analizaremos por qué ciertos aspectos de la dinámica son
 # universales, como por ejemplo los exponentes de Feigenbaum, es decir, por qué
 # se obtienen *los mismos resultados* para una familia más amplia de mapeos,
-# más allá de la cuadrática. Analizaremos este aspecto para la familia cuadrática.
+# más allá de la cuadrática.
 
 # El argumento que se presenta será más bien cualitativo; sin embargo, las
 # observaciones que aquí se harán se pueden poner en términos rigurosos, que
