@@ -18,6 +18,7 @@
 # - ¿Qué particularidad ocurre (en términos del exponente de Lyapunov) cuando tenemos *ciclos superestables*, es decir, cuando $x=0$ es parte de un ciclo periódico?
 #
 
+hago cambios
 #-
 #Respuesta
 
