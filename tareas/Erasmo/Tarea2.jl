@@ -6,7 +6,11 @@
 # > Fecha de aceptación: 30 de julio
 
 using Pkg
-Pkg.activate("..")
+Pkg.activate("../..")
+Pkg.add("IntervalArithmetic")
+Pkg.add("IntervalRootFinding")
+Pkg.add("OffsetArrays")
+Pkg.add("Polynomials")
 Pkg.instantiate()
 using Plots, IntervalArithmetic, IntervalRootFinding, OffsetArrays
 #-
@@ -99,7 +103,7 @@ y = Array{Array{Float64,1}}(undef, n+1)
 labels = Array{String, 1}(undef, n+1)
 
 for i ∈ 0:n
-    q = c->Qcⁿ(0.0, (c, 2^i))
+    q = c->fⁿ(Qc, 0.0, (c, 2^i))
     y[i+1] = q.(xrange)
     labels[i+1] = "n = $i"
 end
@@ -247,7 +251,7 @@ function cₙ!(f, cns::AbstractVector, i, n₁, n₂, p; kwargs...)
 end
 #-
 
-n = 11
+n = 9
 Qrootcns = OffsetVector(Vector{Root{Interval{Float64}}}(undef, n+1), 0:n)
 Qrootcns[0] = Root(interval(0.0), :unique)
 Qrootcns[1] = Root(interval(-1), :unique)
@@ -472,10 +476,10 @@ scatter(cc, ff, markersize=0.5, markerstrokestyle=:solid,
 plot!([0,3.1416], [π/2,π/2], color=:red)
 xaxis!("c")
 yaxis!("x_infty")
-savefig("diag_bif.png")
+savefig("diag_bif1.png")
 #-
 
-# ![Fig 1](diag_bif.png "Fig. 1")
+# ![Fig 1](diag_bif1.png "Fig. 1")
 # 
 # De la Fig. 1 nótese que para $c < 1$, $x_\infty = 0$.
 # Esto es claro ya que $S_c(x) < 1$ para cualquier valor
@@ -495,7 +499,6 @@ Srootcns = OffsetVector(Vector{Root{Interval{Float64}}}(undef, n+1), 0:n)
 Srootcns[0] = Root(interval(π/2), :unique)
 Srootcns[1] = cₙ(Sc, Srootcns[0], 1, π/2, 2.4..2.6, :derecha)
 
-setformat(:midpoint)
 cₙ!(Sc, Srootcns, 2, 2, n, π/2, contractor=Krawczyk, tol=1e-16);
 #-
 
@@ -525,4 +528,55 @@ println("α ≈ $(Sαns[n-1])")
 # y $\alpha$ que para $Q_c$. Esto se debe a que
 # localmente $S_c(\pi/2)$ y $Q_c(0)$ se parecen.
 # Es decir, porque ambas funciones tienen extremos
-# cuadráticos.
+# cuadráticos. Por ejemplo, sea $X_c$ un mapeo
+# cuártico dado por $X_c(x) = x^4 + c$.
+
+Xc(x, c) = x^4 + c
+Xc(x, args...) = Xc(x, args[1])
+#-
+
+crange = -1.3:1/2^10:0.5
+
+ff = diag_bifurc(Xc, 0.0, 2000, 256, crange);
+cc = ones(size(ff, 1)) * crange';
+
+#Lo siguiente cambia las matrices en vectores; ayuda un poco para los dibujos
+ff = reshape(ff, size(ff, 1)*size(ff, 2));
+cc = reshape(cc, size(ff));
+#-
+
+scatter(cc, ff, markersize=0.5, markerstrokestyle=:solid,
+    legend=false, title="Fig. 2", frame = :origin)
+# plot!([0,3.1416], [π/2,π/2], color=:red)
+xaxis!("c")
+yaxis!("x_infty")
+savefig("diag_bif2.png")
+#-
+
+# ![Fig 1](diag_bif2.png "Fig. 1")
+
+Xrootcns = OffsetVector(Vector{Root{Interval{Float64}}}(undef, n+1), 0:n)
+Xrootcns[0] = Root(interval(0.), :unique)
+Xrootcns[1] = Root(interval(-1.), :unique)
+
+cₙ!(Xc, Xrootcns, 2, 2, n, 0., contractor=Krawczyk, tol=1e-16);
+#-
+
+Xcns = interval.(Xrootcns)
+Xfns = OffsetVector(Vector{Interval{Float64}}(undef, n-1), 0:n-2)
+Xdns = Vector{Interval{Float64}}(undef, n)
+Xαns = Vector{Interval{Float64}}(undef, n-1)
+
+fₙ!(Xfns, Xcns)
+dₙ!(Xc, Xdns, Xcns, 0.)
+αₙ!(Xαns, Xdns);
+#-
+
+println("f∞ = δ ≈ $(Xfns[n-2])")
+println("α ≈ $(Xαns[n-1])")
+#-
+
+# En este caso se encuentran valores distintos
+# para $\delta$ y $\alpha$ porque $X_c$ no es
+# cuadrático si no cuártico, por lo que localmente
+# es distinto que $S_c$ y $Q_c$.
