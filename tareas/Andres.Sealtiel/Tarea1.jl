@@ -1,4 +1,4 @@
-# # Tarea 1: Números duales
+# # Tarea 0: Tarea de prueba.
 
 #-
 # > Fecha de envío:
