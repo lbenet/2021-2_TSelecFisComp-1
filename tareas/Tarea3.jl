@@ -16,6 +16,22 @@
 #-
 # ## Ejercicio 1:
 #
+# El objetivo de este ejercicio es mostrar con un ejemplo concreto que periodo 5
+# *no implica* periodo 3. El ejercicio lo pueden hacer analítica o numéricamente.
+#
+# Consideren el mapeo de $F:[1,5]\to[1,5]$ definido tal
+# que $F(1)=3$, $F(2)=5$, $F(3)=4$, $F(4)=2$, $F(5)=1$, y en cada intervalo $[n,n+1]$,
+# con $n=1, \dots,4$, $F$ es lineal.
+# - (a) Muestren que $F$ tiene una órbita de periodo 5.
+# - (b) Muestren que $F$ **no** tiene órbita periódica de periodo 3.
+
+#-
+#Respuestas
+
+
+#-
+# ## Ejercicio 2:
+#
 # Estudien las propiedades estadísticas del mapeo cuadrático $Q_c(x)$, con $c=-2$.
 # Concretamente, obtengan la distribución de probabilidad (histograma de frecuencias)
 # que se obtiene al iterar muchas (¡muchas!) veces un valor inicial cualquiera $x_0$. ¿Depende
@@ -25,7 +41,7 @@
 #Respuestas
 
 #-
-# ## Ejercicio 2:
+# ## Ejercicio 3:
 #
 # Estudien la dinámica para el mapeo cuadrático $Q_c(x)$, con $c=-2.2$.
 #
@@ -46,7 +62,7 @@
 #Respuestas
 
 #-
-# ## Ejercicio 3:
+# ## Ejercicio 4:
 #
 # NOTA: Para este ejercicio es útil que tengan instaladas las paqueterías
 # `Images.jl`, `Colors.jl` y `ColorSchemes.jl`, u otras. Sugiero que las instalen
@@ -77,7 +93,7 @@
 #Respuestas
 
 #-
-# ## Ejercicio 4:
+# ## Ejercicio 5:
 #
 
 # Consideren de nuevo el mapeo $z_{n+1} = z_n^2 + c$ donde $z_n$ y $c$ son números
