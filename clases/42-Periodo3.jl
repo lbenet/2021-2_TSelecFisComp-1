@@ -83,10 +83,6 @@ function diag_bifurc(f, nit, nout, crange)
 end
 
 #-
-# Empezamos por generar el diagrama de bifurcaciones entero, a fin de más o
-# menos localizar la ventana de periodo 3.
-
-#-
 #Definimos el mapeo cuadrático
 Qc(x,c) = x^2 + c
 
@@ -94,21 +90,11 @@ Qc(x,c) = x^2 + c
 Qc3(x,c) = Qc(Qc(Qc(x,c),c),c)
 
 #-
-#Diagrama de bifurcaciones
-crange = crange = 0.25:-1/2^8:-2.0
-ff = diag_bifurc(Qc, 1000, 256, crange);
-cc = ones(size(ff, 1)) * crange';
-
-#Cambiamos las matrices en vectores; útil para graficar
-ff = reshape(ff, size(ff, 1)*size(ff, 2));
-cc = reshape(cc, size(ff));
+# Empezamos con el diagrama de bifurcaciones considerance $c\in[-2,0.25]$, para localizar
+# aproximadamente la ventana de periodo 3.
 
 #-
-scatter(cc, ff, markersize=0.5, markerstrokestyle=:solid,
-    legend=false, title="Diagrama de bifurcaciones")
-xaxis!("c")
-yaxis!("x_infty")
-
+# ![Diagrama bifurcacione](diag_bif1.png)
 
 #-
 # Del diagrama de bifurcaciones podemos ver que la ventana de periodo 3
@@ -116,8 +102,8 @@ yaxis!("x_infty")
 
 #-
 #Intervalo de interés para el diagrama de bifurcaciones
-crange = -1.7:-1/2^10:-1.8
-ff = diag_bifurc(Qc, 1000, 256, crange);
+crange = -1.7:-1/2^12:-1.8
+ff = diag_bifurc(Qc, 1000, 1000, crange);
 cc = ones(size(ff, 1)) * crange';
 
 #Cambiamos las matrices en vectores; útil para graficar
@@ -129,10 +115,19 @@ scatter(cc, ff, markersize=0.5, markerstrokestyle=:solid,
     legend=false, title="Ventana de periodo 3")
 xaxis!("c")
 yaxis!("x_infty")
+savefig("diag_bif_per3.png")
+
+#-
+# ![Diag. bifurcaciones cerca del periodo 3](diag_bif_per3.png)
 
 #-
 # Del diagrama anterior vemos que la ventana de periodo 3 inicia
-# en $c=-1.75$. Consideraremos entonces los valores
+# en $c=-1.75$. Otra cosa interesante a notar es que, la órbita de periodo 3
+# eventualmente tiene una bifurcación de doblamiento de periodo, y genera una
+# secuencia de doblamientos de periodo que nuevamente llevan al caos.
+
+#-
+# Consideraremos entonces los valores
 # $c_+ = -1.75 + 1/2^{12}$ y $c_- = -1.75 - 1/2^{12}$, y analizaremos el
 # comportamiento de $Q_c(x)$ con la función `itera_mapeo`. Como
 # condición inicial usaremos el punto
@@ -187,19 +182,22 @@ ylims!(-2, 2.2)
 # transitorio, para $c_- < c_3 = -1.75$ el periodo 3 emerge claramente, lo
 # que sugiere que la órbita de periodo 3 es estable después de la bifurcación.
 # Por otra parte, antes de la aparición de la ventana de periodo 3, para
-# $c_3 < c\_+$, y después del comportamiento transitorio, los iterados
+# $c_3 < c_+$, después del comportamiento transitorio inicial (que tiene que ver con la
+# condición inicial $x_0$), los iterados
 # sucesivos del mapeo parecen acercarse a la órbita de periodo 3,
-# para eventualmente alejarse de ella; este comportamiento lo llamaremos
+# para eventualmente alejarse de ella. Esto se repite varias veces, involucrando
+# distinto número de iteraciones. Este comportamiento lo llamaremos
 # *intermitencia*.
 
 #-
 # El comportamiento *intermitente* se puede entender directamente de la gráfica del
-# tercer iterado del mapeo, es decir, de $y = Q_c(x)^3$. Como se observa en la
+# tercer iterado del mapeo, es decir, de $y = Q_c^3(x)$. Como se observa en la
 # siguiente gráfica, para $c>c_3$ la identidad intersecta a la gráfica de
-# $Q_c(x)^3$ en dos puntos del dominio ilustrado, uno corresponde a la órbira
-# estable de periodo 3 y el otro a la inestable. Por otro lado, para $c<c_3$
+# $Q_c^3(x)$ en dos puntos del dominio ilustrado, uno corresponde a la órbita
+# estable de periodo 3 y el otro a la inestable, lo que sugiere que la bifurcación
+# creó esos dos puntos fijos. Por otro lado, para $c<c_3$
 # no hay intersección con la identidad en el dominio considerado.
-# (De hecho, sí se observan dos # intersecciones, que corresponden a órbitas
+# (De hecho, sí se observan dos intersecciones, que corresponden a las órbitas
 # de periodo 1, pero que están localizadas en otra región.) La curva punteada
 # corresponde a $c=c_3=-1.75$, y claramente muestra una intersección tangente.
 # Esta última observación sugiere que, localmente, la bifurcación es similar
@@ -211,16 +209,16 @@ plot!(-0.075:1/2^10:-0.035, x->Qc3(x, c₋), linewidth=2, color=:green, label="c
 plot!(-0.075:1/2^10:-0.035, x->Qc3(x, -1.75), color=:black, linestyle=:dash, label="c=c_3")
 plot!(-0.075:1/2^10:-0.035, x->x, linewidth=2, color=:red, label="Identidad")
 xlabel!("x")
-ylabel!("y = Q_c(x)^3")
+ylabel!("y = Q_c^3(x)")
 
 #-
 # Si consideramos iterados sucesivos *antes* de la bifurcación, para $c>c_3$, y
 # en particular con condiciones iniciales cargadas a la derecha ($x_0 \gtrsim -0.055$),
-# los iterados muestran un atrapamiento transitorio en esta región, o intermitencia,
+# los iterados muestran un atrapamiento transitorio en esta región,
 # para eventualmente escapar de esta región por el lado izquierdo. Esto aclara
-# el comportamiento mostrado arriba de los iterados de $Q_c(x)$ que se acercan a
-# los distintos puntos de periodo tres, para eventualmente escapar de su cercanía.
-# Dependiendo de la condición inicial, el comportamiento intermitente puede
+# el comportamiento intermitente mostrado arriba para los iterados de $Q_c(x)$ que se
+# acercan a los distintos puntos de periodo tres, para eventualmente escapar de su
+# cercanía. Dependiendo de la condición inicial, el comportamiento intermitente puede
 # durar más o menos, al igual que el tiempo transiente para volver a la cercanía
 # de estas regiones de intermitencia. En estas condiciones, uno esperaría tener
 # un exponente de Lyapunov positivo.
@@ -233,31 +231,40 @@ ylabel!("y = Q_c(x)^3")
 # El teorema de Li y Yorke establece que, bajos ciertas condiciones (que en particular se
 # satisfacen cuando existen órbitas de periodo 3), (i) existen órbitas periódicas con cualquier
 # valor del periodo, y (ii) existe un conjunto no numerable de puntos que no es asintóticamente
-# periódico. La primera parte de este teorema es una caso particular del teorema de
-# Sarkovsky, que de hecho establece un ordenamiento (de los números naturales) en el que
+# periódico. La primera parte de este teorema es una caso particular del [teorema de
+# Sarkovsky](http://www.scholarpedia.org/article/Sharkovsky_ordering), que
+# establece un ordenamiento (de los números naturales) en el que
 # la aparición de cierto periodo implica la existencia de otros periodos.
 # En este apartado mostraremos la idea de la demostración de la primer parte del
 # teorema de Li y Yorke.
 
-# Teorema (Li-Yorke): Sea $J$ un intervalo y $F:J\toJ$ continua. Supongamos que $a\in J$
+# Teorema (Li-Yorke): Sea $J$ un intervalo y $F:J\to J$ continua. Supongamos que $a\in J$
 # es un punto tal que $b=F(a)$, $c=F^2(a)$ y $d=F^3(a)$ tal que se satisface
 #
 # \begin{equation}
-# d \le a < b < c \quad \textrm{(o} d \ge a > b > c\textrm{)}.
+# d \le a < b < c \quad \textrm{(o } d \ge a > b > c\textrm{)}.
 # \end{equation}
 #
 # Entonces,
 # - T1: para toda $k=1, 2, 3, \dots$ extiste un punto periódico de periodo $k$ en $J$
+#
 # Además,
 # - T2: existe un conjunto no numerable $S\subset J$, que no contiene puntos periódicos,
 #    que satisface las siguientes condiciones:
 #    - (A) Para todo $p,q\in S$, $p\neq q$,
-#           $$ \lim_{n\to\infty} \sup |F^n(p)-F^n(q)| > 0, $$
-#           y,
-#           $$ \lim_{n\to\infty} \inf |F^n(p)-F^n(q)| = 0. $$
+#    \begin{equation}
+#    \lim_{n\to\infty} \sup |F^n(p)-F^n(q)| > 0,
+#    \end{equation}
+#    y,
+#    \begin{equation}
+#    \lim_{n\to\infty} \inf |F^n(p)-F^n(q)| = 0.
+#    \end{equation}
 #    - (B) Para todo $p\in S$, y un punto periódico $q\in J$,
-#           $$ \lim_{n\to\infty} \sup |F^n(p)-F^n(q)| > 0. $$
-#
+#    \begin{equation}
+#    \lim_{n\to\infty} \sup |F^n(p)-F^n(q)| > 0.
+#    \end{equation}
+
+#-
 # El comentario importante es que, si hay un punto periódico con periodo 3 ($a = d$),
 # las hipótesis del teorema se satisfacen. T2-B significa que, genéricamente, $p$ es un
 # punto que nunca termina en una secuencia periódica, es decir, no es asintóticamente
