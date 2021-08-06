@@ -102,7 +102,7 @@
 # donde $y$ será variado haciéndolo tender a cero. La idea de este ejercicio es obtener
 # una estimación numérica de
 # \begin{equation}
-# P = lim_{y\to 0} y n(y).
+# P = \lim_{y\to 0} \left( y n(y) \right).
 # \end{equation}
 #
 
