@@ -42,7 +42,7 @@ end
 #
 # ***2*** *Cuando se ejecuten las gráficas, estas ya tiene parámetros tanto de particion, tamaño de intervalo e iteraciones, tal que se buscó mas o menos estuvieran equilibrados entre dar buenos resultados y no tardarse tanto en ejecutar. Por lo que se recomienda al menos no la primera vez cambiar estos valores. Ya si después se quiere probar la funcionalidad con diferentes parámetros adelante, bajo la advertencia que algunas cosas sí que pueden tardar o inclusive trabar (mi compu murió un par de ocasiones :/ ).*
 
-Q(x,c) = x^2 + c
+Q(x,c) = x^2 + c-2x^2
 
 # +
 #iterados(Q, 0, -3/2, 100_000_000)
