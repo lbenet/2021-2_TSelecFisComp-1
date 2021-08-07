@@ -41,21 +41,52 @@ Q²(x,c)=x^2+c
 
 #-
 function lyapunov(f,n,x0) ## Primero defino una función que calcula el exponente de Lyapunov.
-    s=0
-    xs=ones(Float64,n+1)
-    xs[1]=x0
+    s=0 ## INcorporo la recomendación.
+    xi=x0
+    xf=f(xi)
     for i in 0:n-1
-        xs[i+2]=f(xs[i+1])
-        xi=xs[i+1]
         t1=log(abs(derf(f,xi)))
         s=s+t1
+        xi=xf
+        xf=f(xi)
     end
-    ##display(xs)
+    
     return s/n
 end     
 
 ## Checo si funciona.
 lyapunov(x->(x^2)-3/4,10000,1e-20)
+
+
+#-
+## Escribo una función que determina el valor de $c$ para el cual el exponente de Lyapunov se vuelve positivo por primera vez. 
+## Lo anterior me ayuda a dar la condición inicial para el método de Newton.
+
+function search_infinite_period(ci,cf,m,x0)
+    cs=range(ci,stop=cf,length=m) ## VAlores de c a probar.
+    
+    lyaL=ones(Float64,m)
+    lk=0
+    c=0
+    for k in m:-1:1
+        c=cs[k]
+        lyaL[k]=lyapunov(x->x^2+c,4000,x0)
+        lk=lyaL[k]
+       ## println("lk= ",lk)
+       ## println("c= ",c)
+        
+        
+        if lk > 1e-5
+            ## println("c= ",c)
+            break
+        end
+    end
+    return c 
+end
+
+## Calculo el valor de la condición inicial a emplear al buscar los ciclos superestables.
+search_infinite_period(-1.40120000000027,-1.40096,100000,1e-20)
+
 
 
 
@@ -167,8 +198,8 @@ function lyapunovQPlt_complete(ci,cf,m,x0)
     ## Calcula las c´s donde existen ciclos superestables
     
     for n in 1:12
-        C = roots_Newton(c -> Qⁿc(0.0,c,2^n), -1.4, 400)
-        println("n= ",n," c= ",C)
+        C = roots_Newton(c -> Qⁿc(0.0,c,2^n), -1.4012021426214263, 400) ## Corrijo la condición empleada. Sustituyo por la hallada en una celda anterior.
+        println("n= ",n," c= ",C)             
         plot!([C,C],[-5,1.5],label="",alpha=0.6,color="purple")
     end
     ylims!((-5,1.5))
@@ -189,12 +220,12 @@ lyapunovQPlt_complete(-1.42,-1.3,4000,1e-20)
 lyapunovQPlt_complete(-1.408,-1.375,4000,1e-20)
 
 #-
-# De los diagramas anteriores, podemos notar que los puntos $c$ que corresponden a ciclos superestables del mapeo cudrático coinciden con 
+# De los diagramas anteriores, podemos notar que los puntos $c$ que corresponden a ciclos superestables del mapeo cuadrático coinciden con 
 # mínmos locales de la curva $\lambda_{c}(x_{0})$.  Es interesante notar que todos los puntos superestables que calculamos siguen corresponden a mínimos locales menores a cero.
 # Lo anterior es razonable, ya que esperaríamos un comportamiento menos caótico en dichos puntos. 
 # Como la curva del exponente de Lyapunov tiene un mínimo local, sabemos que estamos lo más alejados posible del cáos.
 
-# Otro fenómeno interesante es que los valores $c$ correspondientes a ciclos superestables paracen agruparse/amontonarse alrededor de $c=-1.4$. 
+# Otro fenómeno interesante es que los valores $c$ correspondientes a ciclos superestables paracen agruparse/amontonarse alrededor de $c=-1.401208$. 
 # Esto se debe a que los intervalos donde se produce el doblamiento de periodo decrecen conforme vamos aumentando el periodo.
 
 
@@ -266,7 +297,7 @@ lyapunovQPlt_complete(-1.408,-1.375,4000,1e-20)
 function superstable_cs(n)
     cns=zeros(Float64,n+1)
     for k in 1:n   
-        C = BigFloat(roots_Newton(c -> Qⁿc(0.0,c,2^k), -1.4, 400))
+        C = BigFloat(roots_Newton(c -> Qⁿc(0.0,c,2^k), -1.401182874628965, 800))
         cns[k+1] = C
     end
     return cns
@@ -289,11 +320,11 @@ end
 # Empleando mi función `sequence_fn(n)`, estimamos $\delta=\lim_{n\rightarrow \infty}f_{n}\approx f_{5}$.
 
 #-
-display(sequence_fn(6))
+display(sequence_fn(8)) ## Para n=8 empieza a fallar.
 
 
 #-
-# Parece que $\delta\approx 4.655$ (no sé por que luego no converge, incluso utilizando precisión extendida). 
+# Parece que $\delta\approx 4.669060660675423$ . El valor reportado en la literatura es $\delta\approx 4.669201$. 
 # ***
 
 #-
@@ -360,12 +391,12 @@ end
 
 
 #-
-α(14)
+α(14) ## Para n=7 empieza a fallar (esto significa que falla para c_{9})
 
 
 #-
-# Aquí tenemos un problema, ya que el valor de $\alpha$ tampoco parece converger. No obstante, es curioso 
-# que el último valor distinto de $-1$ se aproxima bastante al valor listado en la literatura para la constante de Feigenbaum: $\alpha\approx -2.50230$.
+# Aquí obtuve un valor de $\alpha\approx -2.5028783351127877$ 
+# El valor se aproxima bastante al valor reportado en la literatura: $\alpha\approx -2.50230$.
 
 
 
@@ -465,11 +496,42 @@ function transcendental_Sc(x,c,n)
 end
 
 
+
+
+#-
+## Estimo la condición inicial para el nuevo mapeo.
+using Distributions
+
+function search_infinite_period_s(ci,cf,m,x0)
+    cs=range(ci,stop=cf,length=m) ## Valores de c a probar.
+    
+    lyaL=ones(Float64,m)
+    lk=0
+    c=0
+    for k in 1:length(cs)
+        c=cs[k]
+        lyaL[k]=lyapunov(x->Sc(x,c),5000,x0)
+        lk=lyaL[k]
+       
+        
+        if lk ≥ eps(0.0)
+            println("c= ",c)
+            break
+        end
+    end
+    return c 
+end
+
+search_infinite_period_s(2.71907,2.7191,50000,rand(Uniform(0,pi))) ## Para reducir el rango de parámetros (c's) en el que busco el valor correcto, hice un par de 'zooms' al diagrama de bifurcaciones del mapeo S_{c} al final del ejercicio.
+
+
+
+
 #-
 function superstable_qs(n)
     qns=zeros(Float64,n+1)
     for k in 0:n   
-        Q = BigFloat(roots_Newton(c -> transcendental_Sc(xstar,c,2^(k)), 2.9, 600))
+        Q = BigFloat(roots_Newton(c -> transcendental_Sc(xstar,c,2^(k)),2.7190804036080722 , 800))
         qns[k+1] = Q
     end
     return qns
@@ -490,12 +552,13 @@ end
 
 #-
 ## Calculo el valor de δ para el nuevo mapeo.
-sequence_fn_Sc(9)
+sequence_fn_Sc(7)
 
 #-
-# Parece ser que $\delta\approx 4.045 $ para el mapeo $S_{c}(x)$.
-
+# Parece que $\delta\approx 4.668105671872695$ para el mapeo $S_{c}(x)$. Es interesante notar que la constante $\alpha$ del nuevo mapeo es casi la misma que para el mapeo cuadrático. 
+# Al parecer, Feigenbaum descubrió que este comprtamiento universal lo comparten todos los mapeos unidimensionales con un solo máximo cuadrático.
 # ***
+
 
 # Ahora calculo $\alpha$.
 
@@ -505,7 +568,7 @@ sequence_fn_Sc(9)
 function return_min_dist_Sin(vec,val) ## Regresa la distancia mínima al cero de un array. 
 
     vec =vec.-val
-    @show(vec)
+   #  @show(vec)
     vecaux2 = abs.(setdiff!(vec, [0])) ## Elimina el cero del array y convierte todo a valor absoluto.
     
     ## Luego, considero dos casos. Esto me permite asegurar que no hay problemas.
@@ -525,7 +588,7 @@ end
 
 function α_Sin(n)
     cs=superstable_qs(n)
-    @show(cs)
+    # @show(cs)
     ds=zeros(Float64,n+1) 
     αs=zeros(Float64,n)
     
@@ -538,10 +601,10 @@ function α_Sin(n)
             xp=BigFloat(Sⁿc(x,c,1))
             vecaux[k]=xp
         end
-        @show(vecaux)
+        # @show(vecaux)
         ds[i]= return_min_dist_Sin(vecaux,xstar)
     end
-    @show(ds)
+    # @show(ds)
     
     for i in 1:n
         a=-(ds[i]/ds[i+1])
@@ -554,11 +617,11 @@ end
 
 
 #-
-α_Sin(3)
+α_Sin(5)
 
 
 #-
-
+# Parece ser que $\alpha\approx -2.506683425305034$, exhibiendo de nuevo el carácter universal de las constantes de Feigenbaum.
 
 
 
@@ -574,11 +637,10 @@ end
 
 
 #-
-using Distributions
 using Plots
 
-function bifurcation_Sin(ncs,ns,cfin)
-    cs=range(1,stop=cfin,length=ncs)
+function bifurcation_Sin(ncs,ns,cin,cfin)
+    cs=range(cin,stop=cfin,length=ncs)
     orbits=zeros(Float64,(ns,ncs))
     
     for k in 1:length(cs)
@@ -598,37 +660,64 @@ function bifurcation_Sin(ncs,ns,cfin)
     return (orbits,cs)
 end
     
-    
 
-function pltOrb_Sin(ncs,ns,cfin)
-    orbits,cs=bifurcation_Sin(ncs,ns,cfin)
+function pltOrb_Sin(ncs,ns,cin,cfin,args)
+    orbits,cs=bifurcation_Sin(ncs,ns,cin,cfin)
     l=size(orbits)[1]
-    N=Int(floor(l/2))
+    N=Int(floor(l/4))
     orbitsp=orbits[N:end,:]
+    si=size(orbitsp)[1]
         
-    p=scatter(Float64[cs[1] for j in 1:N],orbitsp[1:N,1],xlabel="c",ylabel="x",label="",color="purple",alpha=0.7,ms=0.9,title="Diagrama de órbitas mapeo f(x)=csin(x)",legend=:topleft)
+    p=scatter(Float64[cs[1] for j in 1:si],orbitsp[:,1],xlabel="c",ylabel="x",label="",color="purple",alpha=0.7,ms=0.9,title="Diagrama de órbitas mapeo f(x)=csin(x)",legend=:topleft)
     plot!([cs[1],cs[end]],[xstar,xstar],color="red",label="x*",alpha=0.8)
-    plot!([1.5707,1.5707],[0,3],color="blue",label="",alpha=0.6)
-    plot!([2.443,2.443],[0,3],color="blue",label="",alpha=0.6)
-    plot!([2.658,2.658],[0,3],color="blue",label="",alpha=0.6)
-    plot!([2.7063,2.7063],[0,3],color="blue",label="",alpha=0.6)
+    plot!([2.7190804036080722,2.7190804036080722],[0,3],color="green",label="",alpha=0.4)
+    
     
     for k in 2:length(cs)
-        scatter!(Float64[cs[k] for j in 1:N],orbitsp[1:N,k],color="purple",alpha=0.7,ms=0.9,label="")
+        scatter!(Float64[cs[k] for j in 1:si],orbitsp[:,k],color="purple",alpha=0.7,ms=0.9,label="")
+    end
+    
+    if args[1] == false
+        plot!([1.5707,1.5707],[0,3],color="blue",label="",alpha=0.6)
+        plot!([2.443,2.443],[0,3],color="blue",label="",alpha=0.6)
+        plot!([2.658,2.658],[0,3],color="blue",label="",alpha=0.6)
+        plot!([2.7063,2.7063],[0,3],color="blue",label="",alpha=0.6)
+    end
+    
+    if args[1]
+        ylims!((args[2],args[3]))
     end
     
     return p 
 end
 
+#-
+# A continuación hago el diagrama de bifurcaciones para el mapeo $S_{c}(c)$. La línea roja horizontal marca el punto $x=x^{*}=\frac{\pi}{2}$, 
+# y las líneas azules marcan los valores de $c$ para los cuañes tenemos ciclos superestables.
+
+# La línea verde representa el punto donde el mapeo presenta una órbita infinita. 
+
+#-
+oDiag=pltOrb_Sin(300,500,1,3*pi,false)
+savefig(oDiag,"diag_bif1.png")
+
+#-
+# ![Fig 1](diag_bif1.png "Fig. 1")
 
 
 #-
-oDiag=pltOrb_Sin(300,500,3*pi)  ## Diagrama de bifurcaciones para el intervalo [1,3π]
-
-
+oDiag2=pltOrb_Sin(300,1200,1,pi,false) ## Haciendo ´zoom´ en el intervalo [0,pi], que es donde la forma del seno y del mapeo cuadrático es simliar..
+savefig(oDiag2,"diag_bif2.png")
 
 #-
-oDiag2=pltOrb_Sin(210,500,pi) ## Haciendo ´zoom´ en el intervalo [0,pi], que es donde la forma del seno y del mapeo cuadrático es simliar.
+# ![Fig 2](diag_bif2.png "Fig. 2")
+
+#-
+oDiag3=pltOrb_Sin(420,1600,2.71,2.725,(true,1.4,1.65)) 
+savefig(oDiag3,"diag_bif3.png")
+
+#-
+# ![Fig 3](diag_bif3.png "Fig. 3")
 
 
 
