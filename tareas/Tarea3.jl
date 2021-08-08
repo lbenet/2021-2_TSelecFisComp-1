@@ -45,17 +45,11 @@
 #
 # Estudien la dinámica para el mapeo cuadrático $Q_c(x)$, con $c=-2.2$.
 #
-# - ¿Cómo caracterizan el valor al que tiende asintóticamente (muchas iteraciones)
-# *casi* cualquier condición inicial en el intervalo $I=[-p_+,p_+]$,
-# donde $p_+$ es el valor positivo tal que $Q_c(p_+)=p_+$? (El intervalo
-# $I$ es el intervalo donde toda la dinámica *interesante* ocurre.)
+# - ¿Cómo caracterizan el valor al que tiende asintóticamente (muchas iteraciones) *casi* cualquier condición inicial en el intervalo $I=[-p_+,p_+]$, donde $p_+$ es el valor positivo tal que $Q_c(p_+)=p_+$? (El intervalo $I$ es el intervalo donde toda la dinámica *interesante* ocurre.)
 #
-# - Encuentren una condición inicial concreta  que no siga el comportamiento típico
-# que mostraron en el inciso anterior. ¿Cuál es la regla general para encontrar los
-# puntos que no satisfacen el comportamiento genérico?
+# - Encuentren una condición inicial concreta  que no siga el comportamiento típico que mostraron en el inciso anterior. ¿Cuál es la regla general para encontrar los puntos que no satisfacen el comportamiento genérico?
 #
-# - Caractericen los subconjuntos de condiciones iniciales $I$ tales que, después de
-# $n=1,2,3,\dots$ iterados del mapeo, su intersección con $I$ es vacía.
+# - Caractericen los subconjuntos de condiciones iniciales $I$ tales que, después de $n=1,2,3,\dots$ iterados del mapeo, su intersección con $I$ es vacía.
 #
 
 #-
@@ -74,7 +68,7 @@
 # Construiremos el conjunto de Mandelbrot.
 #
 # - Primero, muestren que si para alguna $n$ $|z_n|^2 > 4$, entonces la evolución
-# de la órbita del mapeo diverge, es decir, |z_n| va a crecer indefinidamente.
+# de la órbita del mapeo diverge, es decir, $|z_n|$ va a crecer indefinidamente.
 #
 # - Escriban una función que devuelve el número de iteración de $z_0$, dada $c$, en la que
 # diverge, es decir, el valor de $n$ cuando $|z_n|^2>4$. Si la condición inicial *no*
