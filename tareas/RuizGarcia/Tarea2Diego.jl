@@ -64,30 +64,46 @@ lyapunov(x->(x^2)-3/4,10000,1e-20)
 
 function search_infinite_period(ci,cf,m,x0)
     cs=range(ci,stop=cf,length=m) ## VAlores de c a probar.
+    cs=reverse(cs)
     
-    lyaL=ones(Float64,m)
-    lk=0
     c=0
-    for k in m:-1:1
-        c=cs[k]
-        lyaL[k]=lyapunov(x->x^2+c,4000,x0)
-        lk=lyaL[k]
-       ## println("lk= ",lk)
-       ## println("c= ",c)
+    for k in cs ## Implemento la sugerencia.
+        c=k
+        lk=lyapunov(x->x^2+c,5000,x0)
         
-        
-        if lk > 1e-5
-            ## println("c= ",c)
+        if lk ≥ eps(0.0)
+            println("c= ",c)
             break
         end
     end
-    return c 
+    return c
 end
 
-## Calculo el valor de la condición inicial a emplear al buscar los ciclos superestables.
-search_infinite_period(-1.40120000000027,-1.40096,100000,1e-20)
+## Calculo el valor de la condición inicial a emplear al buscar los ciclos superestables. No logré obtener el valor que listaba en mi commit anterior (el valor anterior lo obtuve tonteando con mi función).
+condin1 = search_infinite_period(-1.40121,-1.40111,100000,1e-20) 
 
 
+#-
+## Refinación de la función de búsqueda
+
+function search_infinite_period_refined(ci,cf,m,x0,nits)
+    
+    c=search_infinite_period(ci,cf,m,x0) # Valor inicial del parámetro.
+    
+    for n in 1:nits
+        caux=c
+        s=(0.1)^(n+5)
+        c=search_infinite_period(caux+s,caux-s,m,x0)
+    end
+    
+    return c
+end
+
+## Busco la condición incial con mi nueva función.
+search_infinite_period_refined(-1.402,-1.401,9000,1e-20,10)
+
+#-
+# Terminé no usando el valor obtenido en la celda anterior, pero los resultados del ejercicio 2 no cambian mucho.
 
 
 #-
@@ -198,7 +214,7 @@ function lyapunovQPlt_complete(ci,cf,m,x0)
     ## Calcula las c´s donde existen ciclos superestables
     
     for n in 1:12
-        C = roots_Newton(c -> Qⁿc(0.0,c,2^n), -1.4012021426214263, 400) ## Corrijo la condición empleada. Sustituyo por la hallada en una celda anterior.
+        C = roots_Newton(c -> Qⁿc(0.0,c,2^n), condin1, 400) ## Corrijo la condición empleada. Sustituyo por la hallada en una celda anterior.
         println("n= ",n," c= ",C)             
         plot!([C,C],[-5,1.5],label="",alpha=0.6,color="purple")
     end
@@ -297,7 +313,7 @@ lyapunovQPlt_complete(-1.408,-1.375,4000,1e-20)
 function superstable_cs(n)
     cns=zeros(Float64,n+1)
     for k in 1:n   
-        C = BigFloat(roots_Newton(c -> Qⁿc(0.0,c,2^k), -1.401182874628965, 800))
+        C = BigFloat(roots_Newton(c -> Qⁿc(0.0,c,2^k), condin1, 900))
         cns[k+1] = C
     end
     return cns
@@ -324,7 +340,7 @@ display(sequence_fn(8)) ## Para n=8 empieza a fallar.
 
 
 #-
-# Parece que $\delta\approx 4.669060660675423$ . El valor reportado en la literatura es $\delta\approx 4.669201$. 
+# Parece que $\delta\approx 4.668548581445635$ . El valor reportado en la literatura es $\delta\approx 4.669201$. 
 # ***
 
 #-
@@ -391,11 +407,11 @@ end
 
 
 #-
-α(14) ## Para n=7 empieza a fallar (esto significa que falla para c_{9})
+α(8) ## Para n=7 empieza a fallar (esto significa que falla para c_{9})
 
 
 #-
-# Aquí obtuve un valor de $\alpha\approx -2.5028783351127877$ 
+# Aquí obtuve un valor de $\alpha\approx -2.5028783351127877$.
 # El valor se aproxima bastante al valor reportado en la literatura: $\alpha\approx -2.50230$.
 
 
