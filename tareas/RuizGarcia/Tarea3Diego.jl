@@ -398,8 +398,7 @@ function mult_time_series_2(f,nits,xi,xf,nxs)
     for x0 in interval
         x = iterate_map(f,nits,x0)
         if x < 10^10
-            
-            push!(finites,x)
+            push!(finites,x_0)
         end
     end
 
