@@ -39,7 +39,7 @@
 # no existe la posibilidad de una órbita de periodo $3$.
 
 #-
-## Nadamás para completar el ejercicio, hago también la parte computacional.
+## Nada más para completar el ejercicio, hago también la parte computacional.
 
 function map_F(x)
     if x == 1
@@ -80,7 +80,7 @@ function period(f,x1,nits)
 end
 
 #-
-# Ahora calculo el priodo para todos los elementos de $\{1,2,3,4,5\}$. Como todos tienen periodo $5$, confirmamos la imposibilidad del periodo $3$.
+# Ahora calculo el periodo para todos los elementos de $\{1,2,3,4,5\}$. Como todos tienen periodo $5$, confirmamos la imposibilidad del periodo $3$.
 
 #-
 period(map_F,1,7)
@@ -132,7 +132,7 @@ period(map_F,5,7)
 
 # Antes de empezar a escribir código, podemos ver qué pasa con el mapeo $Q_{-2}(x)$.
 
-# Resolviendo $x = x^2 -2$, obtnemos los dos puntos fijos
+# Resolviendo $x = x^2 -2$, obtenemos los dos puntos fijos
 # $$
 # \begin{align}
 # x_{+} & = 2,\\
@@ -154,7 +154,7 @@ period(map_F,5,7)
 # Los resultados anteriores son importantes, ya que si iniciamos el mapeo en $x_{\pm},q_{\pm}$, el histograma tendrá solo tendrá una o 
 # dos "barras". Entonces, sabemos a priori que el histograma si depende de la condición inicial.
 
-# También podemos ver que combiene hacer el histograma de frecuencias solo para $x\in[-2,2]$, ya que para cualquier $x$ 
+# También podemos ver que conviene hacer el histograma de frecuencias solo para $x\in[-2,2]$, ya que para cualquier $x$ 
 # fuera del intervalo el mapeo diverge. Por poner un ejemplo, consideremos $x_{0}=2.1$. Entonces
 # $$
 # 2.1\xrightarrow[Q]{} 2.41 \xrightarrow[Q]{} 3.8 \xrightarrow[Q]{} 12.5 \xrightarrow[Q]{} 154.29\dots \xrightarrow[Q]{} \infty.
@@ -272,11 +272,238 @@ savefig(hist14,"hist14.png")
 
 
 #-
-# Analizando las gráficas anteriores, notamos que la forma del histograma sí depende de la condición inicial. La forma de la 
-# distribución para $x_{\pm},q_{\pm}$ son la formas que esperabamos; órbitas periódicas, eventualmente periódicas o puntos fijos. 
-# No obstante, es curioso que la distribución es básicamente la misma 
-# para cualquier $x_{0}\neq  x_{\pm},q_{\pm},0$. De hecho, si puedo divagar un poco, me parece que la distribución es similar a la de
+# Analizando las gráficas anteriores, notamos que la forma del histograma solo depende de la condición inicial si 
+# $x_{0}=x_{\pm},q_{\pm},0$. Esto se debe a que los puntos antes mencionados dan a lugar órbitas cerradas, periódicas o eventualmente
+# periódicas.
+
+# En cambio, para el resto de puntos, la distribución es básicamente la misma.
+# A mi me parece que la distribución resultante es similar a la de
 # el coseno de una variable normal $X$.
+
+#-
+## No considero que el comentario sobre lo del coseno tenga mucha relevancia, tan solo estaba especulando. Igual hago una gráfica para 
+## mostrar la similitud.
+using Distributions
+
+
+thetasp=rand(Uniform(-pi,pi),3000)
+## Calculo el coseno de la variable aleatoria unforme
+ap=cos.(thetasp)
+
+distcos=histogram(ap,nbins=30,color="cyan", alpha=0.5,legend=:topright,label="",title="")
+xlabel!("Valor de cos(x)")
+ylabel!("Frecuencia")
+xlims!(-1,1)
+savefig(distcos,"distcos.png")
+
+#-
+# ![Fig 15](distcos.png "Fig. 15")
+
+#-
+# A mi apreciación, las distrbuciones del mapeo cudrático se parecen a la del coseno mostrada arriba. Eso es notable, ya que la distribución
+# del coseno de la figura anterior muestra la distribución de una variable aleatoria.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-
+# ## Ejercicio 3:
+
+# Estudien la dinámica para el mapeo cuadrático $Q_c(x)$, con $c=-2.2$.
+
+# - ¿Cómo caracterizan el valor al que tiende asintóticamente (muchas iteraciones) *casi* cualquier condición inicial en el intervalo $I=[-p_+,p_+]$, donde $p_+$ es el valor positivo tal que $Q_c(p_+)=p_+$? (El intervalo $I$ es el intervalo donde toda la dinámica *interesante* ocurre.)
+
+# - Encuentren una condición inicial concreta  que no siga el comportamiento típico que mostraron en el inciso anterior. ¿Cuál es la regla general para encontrar los puntos que no satisfacen el comportamiento genérico?
+
+# - Caractericen los subconjuntos de condiciones iniciales $I$ tales que, después de $n=1,2,3,\dots$ iterados del mapeo, su intersección con $I$ es vacía.
+
+
+# ### Respuesta:
+# Según lo visto en los notebooks de la clase, el valor $p_+$ está dado por
+# $$
+# p_+ = \frac{1+\sqrt{9.8}}{2}\approx 2.0652475842498528.
+# $$
+
+# Procedo a realizar una serie de tiempo del mapeo $Q_c$ para diversos valores iniciales $x_0\in[-p_+,p_+]$.
+
+
+#-
+p₊= BigFloat((1+sqrt(9.8))/2)
+
+#-
+Qc(x,c) = BigFloat(x^2+c)
+
+function iterate_map(f,nits,x0)
+    for k in 1:nits
+        x0 = f(x0)
+    end
+    return x0
+end
+
+function mult_time_series(f,nits,xi,xf,nxs)
+    ## Primero creo una matriz con todos los valores
+    interval = range(xi,stop=xf,length=nxs)
+    vals = zeros(Float64,nxs)
+    
+    c=1
+    for x0 in interval
+        x = iterate_map(f,nits,x0)
+        vals[c]=x
+        c=c+1
+    end
+    
+    return vals
+end
+
+
+
+
+#-
+mult_time_series(x->Qc(x,-2.2),100,-p₊,p₊,14)
+
+#-
+# Como podemos observar en la celda anterior, todos las condiciones iniciales empleadas divergen asintóticamente. Ni 
+# siquiera se requiere un gran número de iteraciones.
+
+#-
+# Como se nos pide encontrar los puntos de $I$ que no llevan a un comportamiento asintótico divergente, refino el rango de
+# condiciones iniciales empleado. Busco cuáles condiciones iniciales resultan en un iterado final finito.
+
+#-
+function mult_time_series_2(f,nits,xi,xf,nxs)
+    ## Primero creo una matriz con todos los valores
+    interval = range(xi,stop=xf,length=nxs)
+    finites = Float64[]
+    
+    for x0 in interval
+        x = iterate_map(f,nits,x0)
+        if x < 10^10
+            
+            push!(finites,x)
+        end
+    end
+
+    return finites
+end
+
+mult_time_series_2(x->Qc(x,-2.2),70,-p₊,p₊,80000)
+
+
+#-
+# Parece ser que $\abs{x_0}=0.4837644780717008$ resulta en iterados finitos. Aunque, intenté aumentar el número de iteraciones y para `nits=80` 
+# ya no se obtienen iterados finitos.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-
+# ## Ejercicio 4:
+
+# NOTA: Para este ejercicio es útil que tengan instaladas las paqueterías
+# `Images.jl`, `Colors.jl` y `ColorSchemes.jl`, u otras. Sugiero que las instalen
+# en la tarea (usando `Pkg.add(...)`) sin guardar los cambios en `Project.toml`
+# (es decir, no hagan `git add Project.toml` y `git commit Project.toml` en ningún momento).
+
+# Consideren el mapeo $z_{n+1} = z_n^2 + c$ y la condición inicial $z_0 = 0$,
+# donde $z_n$ y $c$ son números complejos, y donde variaremos $c$ como número complejo.
+# Construiremos el conjunto de Mandelbrot.
+
+# - Primero, muestren que si para alguna $n$ $|z_n|^2 > 4$, entonces la evolución
+# de la órbita del mapeo diverge, es decir, $|z_n|$ va a crecer indefinidamente.
+
+# - Escriban una función que devuelve el número de iteración de $z_0$, dada $c$, en la que
+# diverge, es decir, el valor de $n$ cuando $|z_n|^2>4$. Si la condición inicial *no*
+# ha divergido hasta el número de pasos máximo (`pasos_max`, que se fija inicialmente),
+# la función devolverá `pasos_max+1`. Llamaremos a esta función `numero_pasos`.
+
+# - En el plano complejo ($\textrm{Re}(c)$, $\textrm{Im}(c)$) usaremos un código
+# de color para representar el número de iterados en que la condición inicial $z_0$
+# escapa al variar $c$. Esto es, identificaremos con un color (distinto) la primer $n$ tal que
+# $|z_n|^2 > 4$, que se obtiene con la función `numero_pasos`; si llegamos al número
+# de pasos máximo (`pasos_max`), usaremos el color negro. (Fuera de la región de
+# interés también podemos usar el negro.)
+
+# ### Respuesta:
+
+
+
+#-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-
+# ## Ejercicio 5:
+ 
+# Consideren de nuevo el mapeo $z_{n+1} = z_n^2 + c$ donde $z_n$ y $c$ son números
+# complejos. Definimos $n$ como el número de iteraciones (a partir de $z_0=0$) diverge,
+# es decir, $|z_n| > 2$, como en el ejercicio anterior. Consideren $c =-0.75+i y$,
+# donde $y$ será variado haciéndolo tender a cero. La idea de este ejercicio es obtener
+# una estimación numérica de
+# \begin{equation}
+# P = \lim_{y\to 0} \left( y n(y) \right).
+# \end{equation}
+
+# ### Respuesta:
+
+#-
+
+
+#-
+
+
+
+
+
+
 
 
 
