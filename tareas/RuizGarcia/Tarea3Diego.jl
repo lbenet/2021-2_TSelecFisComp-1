@@ -300,7 +300,7 @@ savefig(distcos,"distcos.png")
 # ![Fig 15](distcos.png "Fig. 15")
 
 #-
-# A mi apreciación, las distrbuciones del mapeo cudrático se parecen a la del coseno mostrada arriba. Eso es notable, ya que la distribución
+# A mi apreciación, las distribuciones del mapeo cuadrático se parecen a la del coseno mostrada arriba. Eso es notable, ya que la distribución
 # del coseno de la figura anterior muestra la distribución de una variable aleatoria.
 
 
@@ -397,20 +397,97 @@ function mult_time_series_2(f,nits,xi,xf,nxs)
     
     for x0 in interval
         x = iterate_map(f,nits,x0)
-        if x < 10^10
-            push!(finites,x_0)
+        if abs(x) < 3.3
+            push!(finites,x0)
         end
     end
 
     return finites
 end
 
-mult_time_series_2(x->Qc(x,-2.2),70,-p₊,p₊,80000)
+mts=mult_time_series_2(x->Qc(x,-2.2),80,-p₊,p₊,2000001)
 
 
 #-
-# Parece ser que $\abs{x_0}=0.4837644780717008$ resulta en iterados finitos. Aunque, intenté aumentar el número de iteraciones y para `nits=80` 
-# ya no se obtienen iterados finitos.
+# Implementando una división del intervalo extremadamente fina, encontramos varias condiciones iniciales que no divergen.
+# Procedo a visualizarlas.
+
+
+#-
+scatter1=scatter(mts,ones(Int8,length(mts)),color="green",ms=3.5,alpha=0.8,xlabel="x's finitas",label="")
+ylims!((0,2))
+savefig(scatter1,"scatter1.png")
+
+#-
+# ![Fig 16](scatter1.png "Fig. 16")
+
+
+#-
+# Viendo la gráfica anterior, se me ocurrió que tal vez los puntos tengan algo que ver con el conjunto de Cantor. Como no se me ocurrió 
+# una forma analítica de probar la intuición, opte por visualizar el conjunto de Cantor.
+
+#-
+function cantor(n,limits)
+    cantor = Vector{Float64}[[limits[1],limits[2]]]
+
+    for k in 1:n
+        cantoraux = Vector{Float64}[]
+        for el in cantor
+            xi = el[1]
+            xf = el[2]
+            d = (xf-xi)/3
+            new1 = [xi,xi+d]
+            new2 = [xf-d,xf]
+            push!(cantoraux,new1,new2)
+        end
+        cantor = copy(cantoraux)
+    end
+    return cantor
+end
+
+
+
+function plt_cantor(n,limits)
+    vec = cantor(n,limits)
+    
+    plt=plot(vec[1],[1.2,1.2],color="purple",lw=2,alpha=0.7,xlabel="",ylabel="",label="")
+    xlims!(limits)
+    ylims!((0,2))
+    
+    for k in 2:length(vec)
+        vek = vec[k]
+        plot!(vec[k],[1.2,1.2],color="purple",lw=3.3,alpha=0.7,label="")
+    end
+    display(plt)
+end
+
+#-
+## Pruebo el funcionamiento
+cantor(2,(0,1))
+
+#-
+## Hago la gráfica.
+cantor = plt_cantor(5,(-p₊,p₊))
+savefig(cantor,"cantor.png")
+
+#-
+# ![Fig 17](cantor.png "Fig. 17")
+
+
+#-
+# Desgraciadamente, mi gráfica del conjunto de cantor no se ve tan similar a los puntos iniciales de la figura 16. 
+# No estoy seguro sobre cómo proceder.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -456,9 +533,110 @@ mult_time_series_2(x->Qc(x,-2.2),70,-p₊,p₊,80000)
 
 # ### Respuesta:
 
+## Podemos mostrar que los valores absolutos no convergen con un ejemplo numérico.
+using Distributions
+
+function conv_comp(c,r,m,n)
+    thetasp=rand(Uniform(0,2*pi),m)
+    vals = zeros(Float64,m)
+    
+    cont = 1 
+    for θ in thetasp
+        z0 = r*exp(θ*im) ## Condición inicial
+        for k in 1:n
+            z0 = Qc(z0,c)
+        end
+        vals[cont] = abs(z0)
+        cont = cont +1
+    end
+    return vals
+end         
+
+#-
+# ***
 
 
 #-
+## Como podemos ver, incluso para una modulo cuadrado ligeramente mayor a 4, las secuencias divergen, independientemente del ángulo y del parámetro c
+
+conv_comp(1+0.5im,sqrt(4.0000001),12,10)
+
+#-
+
+conv_comp(0.1+0.2im,sqrt(4.0000001),12,10)
+
+
+#-
+# ***
+
+#-
+## Escribo la función `numerp_pasos`.
+function numero_pasos(c,pasos_max)
+    z0 = 0 +0im
+    n = 0
+    for k in 1:pasos_max
+        n = n+1
+        z0 = Qc(z0,c)
+        m = abs2(z0) ## Calcula el módulo cuadrado.
+        
+        if m > 4
+            return n
+        end
+    end
+    return pasos_max+1
+end
+
+## Veo que funcione
+numero_pasos(0.1-0.5im,300)
+
+
+#-
+# ***
+# Termino por hacer un `heatmap` del conjunto de Mandelbrot (como dios mejor me dió a entender).
+
+#-
+function complex_plane(argsx,argsy)
+    cs = zeros(Complex{Float64},(argsy[3],argsx[3]))
+    
+    xs = range(argsx[1],stop=argsx[2],length=argsx[3])
+
+    ys = range(argsy[1],stop=argsy[2],length=argsy[3])
+    for i in 1:argsx[3], j in 1:argsy[3]
+        x = xs[i]
+        y = ys[j]
+        c = x + im*y
+        cs[j,i] = c
+    end
+    return (cs,xs,ys)
+end
+
+#-
+using ColorSchemes, Plots
+
+function mandelbrot(pasos_max)
+    cs,xs,ys = complex_plane((-2,1,500),(-1,1,500)) ## Genero el conjunto de parámetros.
+    np = broadcast(c->numero_pasos(c,pasos_max),cs)
+    
+    heatmap(xs,ys,np, c = :curl)
+    
+end
+
+
+#-
+mand=mandelbrot(50)
+savefig(mand,"mand.png")
+
+#-
+# ![Fig 18](pp.png "Fig. 18")
+
+
+
+
+
+
+
+
+
 
 
 
@@ -488,19 +666,52 @@ mult_time_series_2(x->Qc(x,-2.2),70,-p₊,p₊,80000)
 # donde $y$ será variado haciéndolo tender a cero. La idea de este ejercicio es obtener
 # una estimación numérica de
 # \begin{equation}
-# P = \lim_{y\to 0} \left( y n(y) \right).
+# P = \lim_{y\to 0} \left( y n(c(y)) \right).
 # \end{equation}
 
 # ### Respuesta:
 
 #-
+c(y) = -0.75 +im*(y)
+
+function estimate_P(yi,yf,nys,pasos_max)
+    ys = range(yi,stop=yf,length=nys)
+    ps = zeros(Float64,nys)
+    
+    cont=1
+    for y in reverse(ys)
+        n = numero_pasos(c(y),pasos_max)
+        ps[cont] = n*y
+        cont = cont+1
+    end
+    return (ps,ys)
+end 
 
 
 #-
+## Estimo el valor de P.
+ps=estimate_P(1e-10,0.01,200,200)[1]
 
+#-
+## También hago una gráfica de como converge P, al menos hasta cierto punto.
+using Statistics
 
+function plt_ps(yi,yf,nys,pasos_max) 
+    ps,ys =  estimate_P(yi,yf,nys,pasos_max)
+    prom = mean(ps[10:end])
+    @show(prom)
+    scatter(reverse(ys),ps,ms=3,color="red",xlabel="y",ylabel="P",label="",alpha=0.4)
+    plot!([0,yf],[prom,prom],color="purple",lw=2,alpha=0.8,label="promedio",legend=:bottomright)
+end
 
+pp=plt_ps(1e-8,0.01,300,9000)
+savefig(pp,"pp.png")
 
+#-
+# ![Fig 19](pp.png "Fig. 19")
+
+#-
+# De las celdas anteriores, yo diría que $P\approx 3.08$
 
 
 
