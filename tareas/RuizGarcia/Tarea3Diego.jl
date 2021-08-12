@@ -478,6 +478,75 @@ savefig(cantor,"cantor.png")
 # Desgraciadamente, mi gráfica del conjunto de cantor no se ve tan similar a los puntos iniciales de la figura 16. 
 # No estoy seguro sobre cómo proceder.
 
+# ***
+# Notemos que en podemos emplear la función `Qⁿc(x,c,n)` para iterar muchas veces el mapeo. Grafico dicha función
+# sobre el intervalo $I=[-p_{+},p_{+}]$ para darme una idea de qué puntos quedan dentro del mismo intervalo 
+# luego de `n` iteraciones del mapeo cuadrático.
+
+#-
+function Qⁿc(x,c,n)
+    if n == 1
+        return Qc(x,c) 
+    else
+        for k in 1:n
+            x=Qc(x,c) 
+        end
+        return x
+    end
+end
+
+
+#-
+function plt_Qⁿc(c,n,m)
+    pran = range(-p₊,stop=p₊,length=m)
+    vals = broadcast(x->Qⁿc(x,c,n),pran)
+    
+    escapes = Float64[]
+    
+    for k in 1:length(vals)
+        v = vals[k]
+        if abs(v) > p₊ 
+            push!(escapes,pran[k])
+        end
+    end
+        
+    plt=scatter(pran,vals,ms=1.5,color="blue",alpha=0.4,xlabel="x",ylabel="Qⁿc",title="n=$n",label="",legend=:bottomright)
+    scatter!(escapes,zeros(Int8,length(escapes)),ms=0.8,color="red",alpha=0.2,label="salen de I")
+    xlims!((-p₊,p₊))
+    ylims!((-p₊,p₊))
+    
+    return (plt,escapes)
+end
+
+
+#-
+iters1=plt_Qⁿc(-2.2,1,100000)
+savefig(iters1[1],"iters1.png")
+
+iters2=plt_Qⁿc(-2.2,2,100000)
+savefig(iters2[1],"iters2.png")
+
+iters3=plt_Qⁿc(-2.2,3,100000)
+savefig(iters3[1],"iters3.png")
+
+iters4=plt_Qⁿc(-2.2,4,100000)
+savefig(iters4[1],"iters4.png")
+
+iters5=plt_Qⁿc(-2.2,5,100000)
+savefig(iters5[1],"iters5.png")
+
+iters6=plt_Qⁿc(-2.2,6,100000)
+savefig(iters6[1],"iters6.png")
+
+iters7=plt_Qⁿc(-2.2,7,100000)
+savefig(iters7[1],"iters7.png")
+
+
+#-
+# En las graficas anteriores ya obtuve los intervalos cuya intersección con $I$ ya es vacía. 
+# No obstante, no se me ocurre una regla anaáloga a la del conjunto de Cantor para construirlos.
+
+
 
 
 
@@ -535,6 +604,7 @@ savefig(cantor,"cantor.png")
 
 ## Podemos mostrar que los valores absolutos no convergen con un ejemplo numérico.
 using Distributions
+Qc(x,c) = x^2+c
 
 function conv_comp(c,r,m,n)
     thetasp=rand(Uniform(0,2*pi),m)
@@ -627,7 +697,7 @@ mand=mandelbrot(50)
 savefig(mand,"mand.png")
 
 #-
-# ![Fig 18](pp.png "Fig. 18")
+# ![Fig 18](mand.png "Fig. 18")
 
 
 
@@ -698,22 +768,46 @@ using Statistics
 
 function plt_ps(yi,yf,nys,pasos_max) 
     ps,ys =  estimate_P(yi,yf,nys,pasos_max)
-    prom = mean(ps[10:end])
-    @show(prom)
-    scatter(reverse(ys),ps,ms=3,color="red",xlabel="y",ylabel="P",label="",alpha=0.4)
-    plot!([0,yf],[prom,prom],color="purple",lw=2,alpha=0.8,label="promedio",legend=:bottomright)
+    papprox = 0
+    for k in 1:length(ps)-1
+        p1 = ps[k]
+        p2 = ps[k+1]
+        d = abs(p1-p2)
+        if d > 0.1
+            papprox = ps[k]
+            @show(papprox)
+            break
+        end
+    end
+    scatter(reverse(ys),ps,ms=4,color="red",xlabel="y",ylabel="P",label="",alpha=0.3)
+    plot!([0,yf],[papprox,papprox],color="blue",lw=1.5,alpha=0.8,label="mejor aproximación P=$papprox",legend=:bottomright)
 end
 
-pp=plt_ps(1e-8,0.01,300,9000)
-savefig(pp,"pp.png")
+pp1=plt_ps(1e-8,0.01,100,9000)
+savefig(pp1,"pp1.png")
 
 #-
-# ![Fig 19](pp.png "Fig. 19")
+# ![Fig 19](pp1.png "Fig. 19")
 
 #-
-# De las celdas anteriores, yo diría que $P\approx 3.08$
+# Según mi estimación, parecería que $P\approx 3.1418928$. El número es sospechosamente parecido a $\pi$. Para obtener un mejor
+# calculo, es necesario refinar la aproximación. Esto se logra al:
+# - aproximarnos más cerca al cero (en vez de parar en `1e-8` paro en `1e-11`).
+# - aumentar el número de puntos en el intervalo.
+# - aumentando la tolerancia `pasos_max` en el cálculo de $n(c(y))$.
 
 
 
+#-
+pp2=plt_ps(1e-11,0.01,1000,1e7) ## Implemento la sugerencia.
+savefig(pp2,"pp2.png")
+
+#-
+# ![Fig 20](pp2.png "Fig. 20")
+
+#-
+# Con la refinación anterior obtuve $P\approx 3.1415947269$, valor que se compara favorablemente a $\pi=3.1415926535897932...$
+# Como último comentario,menciono que mi aproximación mejoró con respecto a mi commit anterior ya que no consideré el valor
+# del promedio. En vez de esto, tomé el último número que sí parecía converger a un número distinto de cero.
 
 
