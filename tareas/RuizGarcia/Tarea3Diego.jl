@@ -429,6 +429,7 @@ savefig(scatter1,"scatter1.png")
 #-
 function cantor(n,limits)
     cantor = Vector{Float64}[[limits[1],limits[2]]]
+    complement = Vector{Float64}[]
 
     for k in 1:n
         cantoraux = Vector{Float64}[]
@@ -438,27 +439,37 @@ function cantor(n,limits)
             d = (xf-xi)/3
             new1 = [xi,xi+d]
             new2 = [xf-d,xf]
+            new3 = [xi+d,xf-d]
             push!(cantoraux,new1,new2)
+            push!(complement,new3)
         end
         cantor = copy(cantoraux)
     end
-    return cantor
+    return (cantor,complement)
 end
 
 
 
-function plt_cantor(n,limits)
-    vec = cantor(n,limits)
+function plt_cantor(n,limits,tipo)
+    cant,comp = cantor(n,limits)
     
-    plt=plot(vec[1],[1.2,1.2],color="purple",lw=2,alpha=0.7,xlabel="",ylabel="",label="")
+    if tipo == 1
+        vec = cant
+        tit = "Conjunto de Cantor \n n=$n"
+    else
+        vec = comp
+        tit = "Complemento del Conjunto de Cantor \n n=$n"
+    end
+    
+    plt=plot(vec[1],[1.2,1.2],color="purple",lw=2,alpha=0.7,xlabel="",ylabel="",label="",title=tit)
     xlims!(limits)
     ylims!((0,2))
     
     for k in 2:length(vec)
         vek = vec[k]
-        plot!(vec[k],[1.2,1.2],color="purple",lw=3.3,alpha=0.7,label="")
+        plot!(vec[k],[1.2,1.2],color="purple",lw=6,alpha=0.7,label="")
     end
-    display(plt)
+    return plt
 end
 
 #-
@@ -466,13 +477,19 @@ end
 cantor(2,(0,1))
 
 #-
-## Hago la gráfica.
-cantor = plt_cantor(5,(-p₊,p₊))
-savefig(cantor,"cantor.png")
+## Hago las gráficas.
+cantorplt = plt_cantor(5,(-p₊,p₊),1)
+savefig(cantorplt,"cantorplt.png")
+
+cantorcomp = plt_cantor(5,(-p₊,p₊),2)
+savefig(cantorcomp,"cantorcomp.png")
 
 #-
-# ![Fig 17](cantor.png "Fig. 17")
+# ![Fig 17](cantorcomp.png "Fig. 17")
 
+
+#-
+# ![Fig 18](cantorplt.png "Fig. 18")
 
 #-
 # Desgraciadamente, mi gráfica del conjunto de cantor no se ve tan similar a los puntos iniciales de la figura 16. 
@@ -497,7 +514,7 @@ end
 
 
 #-
-function plt_Qⁿc(c,n,m)
+function plt_Qⁿc(c,n,m,id)
     pran = range(-p₊,stop=p₊,length=m)
     vals = broadcast(x->Qⁿc(x,c,n),pran)
     
@@ -511,40 +528,85 @@ function plt_Qⁿc(c,n,m)
     end
         
     plt=scatter(pran,vals,ms=1.5,color="blue",alpha=0.4,xlabel="x",ylabel="Qⁿc",title="n=$n",label="",legend=:bottomright)
-    scatter!(escapes,zeros(Int8,length(escapes)),ms=0.8,color="red",alpha=0.2,label="salen de I")
     xlims!((-p₊,p₊))
     ylims!((-p₊,p₊))
+
+
+    if id 
+        plot!(pran,pran,lw=2,color="green",alpha=0.7,label="")
+    else
+        scatter!(escapes,zeros(Int8,length(escapes)),ms=0.8,color="red",alpha=0.2,label="salen de I")
+    end
+    
     
     return (plt,escapes)
 end
 
 
 #-
-iters1=plt_Qⁿc(-2.2,1,100000)
-savefig(iters1[1],"iters1.png")
+idint1=plt_Qⁿc(-2.2,1,100000,true)
+savefig(idint1[1],"idint1.png")
 
-iters2=plt_Qⁿc(-2.2,2,100000)
-savefig(iters2[1],"iters2.png")
+idint2=plt_Qⁿc(-2.2,2,100000,true)
+savefig(idint2[1],"idint2.png")
 
-iters3=plt_Qⁿc(-2.2,3,100000)
-savefig(iters3[1],"iters3.png")
+idint3=plt_Qⁿc(-2.2,4,100000,true)
+savefig(idint3[1],"idint3.png")
 
-iters4=plt_Qⁿc(-2.2,4,100000)
-savefig(iters4[1],"iters4.png")
+#-
+# ![Fig 19](idint1.png "Fig. 19")
 
-iters5=plt_Qⁿc(-2.2,5,100000)
-savefig(iters5[1],"iters5.png")
-
-iters6=plt_Qⁿc(-2.2,6,100000)
-savefig(iters6[1],"iters6.png")
-
-iters7=plt_Qⁿc(-2.2,7,100000)
-savefig(iters7[1],"iters7.png")
+#-
+# ![Fig 20](idint2.png "Fig. 20")
 
 
 #-
-# En las graficas anteriores ya obtuve los intervalos cuya intersección con $I$ ya es vacía. 
-# No obstante, no se me ocurre una regla anaáloga a la del conjunto de Cantor para construirlos.
+# ![Fig 21](idint3.png "Fig. 21")
+
+
+#-
+# En las figuras anteiores grafique $Q^{n}_{c}$ para $n\in\{1,2,4\}$ junto a la identidad en el intervalo $[-p_+,p_+]$. Podemos 
+# observar que la identidad si intersecta a las composiciones del mapeo cuadrático en varios puntos. Esto nos indica la 
+# existencia de órbitas periódicas. En teoría, los puntos pertenecientes a dichas órbitas no tienen por qué diverger. No obstante, como
+# las órbitas son inestables, los valores tienden a diverger luego de iterar el mapeo (como se vió en el primer inciso).
+
+# ***
+# Para terminar el ejercicio, también muestro como van creciendo los conjuntos de puntos 
+# $$
+# J_{n}:=\{x| Q^{n}_{c}(x)\notin [-p_+,p_+] \}.
+# $$
+# En las gráficas que muestro a continuación, los conjuntos $J_n$ los muestro como unión de intervalos rojos.
+
+#-
+iters1=plt_Qⁿc(-2.2,1,100000,false)
+savefig(iters1[1],"iters1.png")
+
+iters2=plt_Qⁿc(-2.2,2,100000,false)
+savefig(iters2[1],"iters2.png")
+
+iters3=plt_Qⁿc(-2.2,3,100000,false)
+savefig(iters3[1],"iters3.png")
+
+iters4=plt_Qⁿc(-2.2,4,100000,false)
+savefig(iters4[1],"iters4.png")
+
+#-
+# ![Fig 22](iters1.png "Fig. 22")
+
+#-
+# ![Fig 23](iters2.png "Fig. 23")
+
+#-
+# ![Fig 24](iters3.png "Fig. 24")
+
+#-
+# ![Fig 25](iters4.png "Fig. 25")
+
+
+#-
+# Como comentario final, observando el comportamiento de los intervalos $J_n$, podemos ver una similitud con el conjunto complemento
+# de Cantor. 
+# Por otro lado, los puntos $x$ que sí se quedan dentro del intervalo $I$ bajo iteraciones se asemejan más al conjunto de Cantor.
 
 
 
@@ -697,7 +759,7 @@ mand=mandelbrot(50)
 savefig(mand,"mand.png")
 
 #-
-# ![Fig 18](mand.png "Fig. 18")
+# ![Fig 26](mand.png "Fig. 26")
 
 
 
@@ -787,7 +849,7 @@ pp1=plt_ps(1e-8,0.01,100,9000)
 savefig(pp1,"pp1.png")
 
 #-
-# ![Fig 19](pp1.png "Fig. 19")
+# ![Fig 27](pp1.png "Fig. 27")
 
 #-
 # Según mi estimación, parecería que $P\approx 3.1418928$. El número es sospechosamente parecido a $\pi$. Para obtener un mejor
@@ -803,7 +865,7 @@ pp2=plt_ps(1e-11,0.01,1000,1e7) ## Implemento la sugerencia.
 savefig(pp2,"pp2.png")
 
 #-
-# ![Fig 20](pp2.png "Fig. 20")
+# ![Fig 28](pp2.png "Fig. 28")
 
 #-
 # Con la refinación anterior obtuve $P\approx 3.1415947269$, valor que se compara favorablemente a $\pi=3.1415926535897932...$
