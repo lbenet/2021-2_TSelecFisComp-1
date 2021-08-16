@@ -158,34 +158,89 @@ function mapeando(f, x₀, n, lim)
 end
 
 mapeando(Q3, 0.5+7*sqrt(5)/10, 30, 3)
+savefig("tres.png")
 
-mapeando(Q3, 0.5-7*sqrt(5)/10, 60, 3)
+# ![Fig_3](tres.png)
 
-mapeando(Q3, -(0.5+7*sqrt(5)/10), 30, 3)
-
-# Después de estar "jugando" con la condición inicial dentro del intervalo establecido, vemos que para todas las que intentamos llega un punto en el que el iterado "sale del interior de la parábola", y por ende, a partir de ahí cuantos más iterados se hagan (que de hecho no son muchos, alrededor de 15 y el valor ya se salió), el valor del iterado empezará a diverger (hacia $\infty$). Es esta la carazterización que se observa del valor asintótico, es *divergente*.
+# Después de estar "jugando" con la condición inicial dentro del intervalo establecido, con la función ``mapeando(f, x₀, n, lim)`` vemos que para todas las $x$'s que intentamos llega un punto en el que el iterado "sale del interior de la parábola", y por ende, a partir de ahí cuantos más iterados se hagan (que de hecho no son muchos, alrededor de 15 y el valor ya se salió), el valor del iterado empezará a diverger (hacia $\infty$). Es esta la carazterización que se observa del valor asintótico, es *divergente*.
 #
 # Ahora, recordando un poco el trabajo expuesto en clase, vemos que al evaluar el punto fijo $p_+ = \left(5 + 7\sqrt{5}\right)/10$ en la derivada, $Q´(p_+) = 2p_+ \approx 8.26$ es $> 1$, por lo que el punto es inestable.
 #
 # Mientras que al evaluar el punto fijo $p_- = \left(5 - 7\sqrt{5}\right)/10$, encontramos que $|Q´(p_-)| = 2|p_-| \approx 4.26 > 1$.
 #
-# Siendo esa la regla general, se debe cumplir que $|Q_c´(p_\pm)| < 1$ para que el punto sea estable (atractivo) y el iterado no siga el comportamiento divergente, *i.e.* para que se converja a algún punto. 
+# Siendo esa la regla general, se debe cumplir que $|Q_c´(p_\pm)| < 1$ para que el punto sea estable (atractivo) y el iterado no siga el comportamiento divergente, *i.e.* para que se converja a algún punto.
 #
-# Por lo que ninguno de los puntos fijos es atractivo. Teniendo que todos los puntos que se evalúen en el intervalo se "irán" al $\infty$.
+# Por lo que ninguno de los puntos fijos es atractivo. Sospechando que todos los puntos que se evalúen en el intervalo se "irán" al $\infty$.
 #
-# Salvo por tres puntos, justamente los fijos $p_+$ y $p_-$ junto con el negativo de $p_+$. Ellos quedarán atrapados en ellos mismos, cosa que no se pudo mostrar cualitativamente aquí ya que *Julia* al truncar los valores $p_\pm$ llegará una iteración (grande comparada con el resto de los puntos) en la que el iterado también se "irá" al $\infty$, como se ve en las Fig. 3. Reiterando que esto es por el truncamiento que tienen tales puntos.
+# Salvo por tres puntos (en principio), justamente los fijos $p_+$ y $p_-$ junto con el negativo de $p_+$. Ellos quedarán atrapados en ellos mismos, cosa que no se pudo mostrar cualitativamente aquí ya que *Julia* al truncar los valores $p_\pm$ llegará una iteración (grande comparada con el resto de los puntos) en la que el iterado también se "irá" al $\infty$, como se ve en la Fig. 3. Reiterando que esto es por el truncamiento que tienen tales puntos.
 #
-# Por esto, los subconjuntos que se piden al final son
+# Pero después de las observaciones y hints recibidos vemos que surgen **otros cuantos puntos inesperados** que no seguirán el comportamiento general (diverger).
 #
-# $$
-# \left(-\frac{5 + 7\sqrt{5}}{10}, \frac{5 - 7\sqrt{5}}{10} \right)
-# $$
+# Para esto, hacemos una función que grafique los valores del mapeo cuadrático para un arreglo de varios valores de $x$ en el intervalo y para algunas iteraciones diferentes.
+
+function Q3vs(xs, ns, y)
+    lx = length(xs); ln = length(ns); iteraciones = []
+    for k in 1:ln
+        valores = zeros(lx)
+        for j in 1:lx
+            x = Q3(xs[j])
+            for i in 2:ns[k]
+                x = Q3(x)
+            end
+            valores[j] = x
+        end
+        push!(iteraciones, valores)
+    end
+    P = plot(xs, iteraciones[1], ylim=(-4, y), title="Fig. 4", xlabel="x", ylabel=L"Q^n(x)",
+        legend=false)
+    for s in 2:ln
+        plot!(P, xs, iteraciones[s], ylim=(-3, y))
+    end
+    display(P)
+end
+
+"""
+    Qⁿ₃(xs, n)
+Función que calcula el ``n``-ésimo iterado del mapeo cuadrático Q3(x) = x^2 - 2.2, y lo evalua en
+los elementos del arreglo (vector) ``xs``. Devolviendo una gráfica con los valores (eje y) dentro
+del intervalo ``[-p_+, p_+]`` en la línea ``y=0``..
+"""
+function Qⁿ₃(xs, n)
+    l = length(xs); valores = zeros(l)
+    for j in 1:l
+        x = Q3(xs[j])
+        for i in 2:n
+            x = Q3(x)
+        end
+        if -2.065247584 < x < 2.065247584
+            valores[j] = 0
+        else
+            valores[j] = 3
+        end
+    end
+    scatter(xs, valores, ylim=(-2.065247584, 2.065247584), markersize=1.5, markerstrokewidth=0,
+        title="Fig. 5", xlabel="x", ylabel=L"Q^n(x)", label=false)
+end
+
+Q3vs(-2.1:0.01:2.1, [1, 2, 3, 4], 20)
+savefig("tres2.png")
+
+Qⁿ₃(-2.1:0.01:2.1, 4)
+
+# Si nos fijamos en la Fig. 4, notamos que para la iteración $n = 1$ (*i.e.* sin iterar la función) se tiene $1$ mínimo, para $n = 2$ ahora son $2$, para  $n = 3 \rightarrow 4$,  $n = 4 \rightarrow 8$, (y al hacerlo por individual) $n = 5 \rightarrow 16$, $n = 6 \rightarrow 32$, y así sucesivamente.
 #
-# $$
-# \left(\frac{5 - 7\sqrt{5}}{10}, \frac{5 + 7\sqrt{5}}{10} \right)
-# $$
+# Cuantas más iteraciones hagamos ($n >> 1$) la gran mayoría de los valores empezarán a crecer rápidamente. Pero a su vez irán apareciendo estos mínimos el doble de veces con cada iteración.
 #
-# ya que para estos conjuntos después de cierto número (no muy grande) de iteraciones, los valores del mapeo iterado divergen, *i.e.* no pertenecen a tales conjuntos (una vez alcanzada esa $n$ nunca más vuelven a caer dentro del conjunto) por lo que la intersección con ellos es vacía.
+# Después de observar un rato, vemos que efectivamente la aparición de estos mínimos en función de la iteración sigue un comportamiento parecido a un *conjunto de Cantor* si hicieramos una correspondencia entre $[-2, 2]$ con $[0, 1]$, intervalo en donde se define el conjunto de Cantor.
+#
+# Pero aquí en vez de partir el intervalo en tercios y quitarle el de en medio, parece que parte el intervalo en cuartos y le quita uno de los de enmedio.
+#
+# Vemos que desde iteraciones pequeñas muchos valores empezarán a cumplir que son más grandes a $p_+ = (5 + 7\sqrt{5})/10$, por lo que cumplirán que su intersección con ***I*** será vacía. Aumentando las iteraciones aumentarán la cantidad de tales valores que sean mayores a $p_+$, pero también aumentará la aparición de estos mínimos (su intersección con ***I*** no será vacía).
+#
+# En la Fig. 5 mostramos cualitativamente tal conjunto, "haciendo" la itersección que se pide para que sólo grafique aquellos puntos que la cumplen. (Se puede ir variando el número de iteraciones e ir viendo cómo se forma tal conjunto.)
+#
+# Por tanto, la intersección de los subconjuntos cuya intersección con ***I*** es vacía es una suerte de conjunto de Cantor con $n$ subdivisiones. (Aunque hay que notar que estrictamente hablando el conjunto de Cantor es para $n \rightarrow \infty$, sucediendo que estos puntos (mínimos) que se quedan dentro de ***I*** serán también infinitis.)
+
 #
 # ### Ejr. 4
 #
