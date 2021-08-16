@@ -50,8 +50,8 @@ function Fⁿ(x, n)
     return x
 end
 
-xs = 1:0.01:5
-plot(xs, Fⁿ.(xs, 5), title="Fig. 1", xlabel="x", ylabel=L"F^n(x)", label=L"F^5",   ### F^5
+xs = 1:5
+plot(xs, Fⁿ.(xs, 5), title="Fig. F(x)", xlabel="x", ylabel=L"F^n(x)", label=L"F^5",   ### F^5
     legend=:bottom, c="red")
 scatter!(1:5, Fⁿ.(1:5, 5), label=false, c="red")
 plot!(xs, Fⁿ.(xs, 3), label=L"F^3", c="blue")   ### F^3
@@ -59,6 +59,9 @@ scatter!(1:5, Fⁿ.(1:5, 3), label=false, c="blue")
 plot!(xs, Fⁿ.(xs, 1), label=L"F^1", c="green")   ### F^1
 scatter!(1:5, Fⁿ.(1:5, 1), label=false, c="green")
 plot!(xs, identity, line=(:dash, 2), c="black", alpha=0.5, label=false)   ### Identidad
+savefig("funcionatrozos.png")
+
+# ![Fig_1](funcionatrozos.png)
 
 # De la Fig. 1 observamos que para el **5to** iterado, la órbita de la función es justamente de periodo 5 ya que los puntos $x =$ {$1, 2, 3, 4, 5$} coinciden todos con la identidad, *i.e.* se mapean en ellos mismos.
 #
@@ -96,8 +99,14 @@ function distribucion(x₀, n, nbins)
 end
 
 distribucion(-1.3, 100_000, 300)
+savefig("histo1.png")
+
+# ![Fig_1](histo1.png)
 
 distribucion(1.7, 100_000, 300)
+savefig("histo2.png")
+
+# ![Fig_1](histo2.png)
 
 # Después de haber estado "jugando" un rato con la condición inicial $x_0$ nos dimos cuenta que esta distribución toma la forma que se ve en las Fig. 2, para el intervalo $[-2, 2]$. A excepción de los valores $x_0 =$ {$-2, -1, 0, 1, 2$}. Fuera del intervalo se pierde el histograma.
 #
@@ -255,6 +264,8 @@ for i in 1:r   ### Ciclo que la rellena
 end
 Imagen
 save("Mandel.png", Imagen)
+
+# ![Mandel.png](attachment:Mandel.png)
 
 # ### Ejr. 5
 
